@@ -25,7 +25,6 @@ func (b *Battle) Start() {
 				role.Action(b.troops[0])
 			}
 		}
-		fmt.Println("========")
 	}
 }
 

@@ -1,8 +1,9 @@
 package internal
 
 import (
-	skill2 "3B/internal/skill"
+	"3B/internal/skill"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -14,41 +15,41 @@ func (a *AI) Action(role *Role, targetTroop *Troop) {
 	defer func() {
 		a.seed += 1
 	}()
-	actionCount := len(role.Skills)
-	s := a.seed % actionCount
-	skill := role.Skills[s]
-	switch skill {
-	case "普通攻擊":
-		enemies := targetTroop.AliveRoles()
-		n := len(enemies)
-		// 只需選擇一個
-		i := a.seed % n
-		target := enemies[i]
-		target.Hp -= role.Str
-		fmt.Printf("%s 對 %s 使用了 %s。\n", role.GetName(), target.GetName(), skill)
-		fmt.Printf("%s 對 %s 造成 %d 點傷害。\n", role.GetName(), target.GetName(), role.Str)
-		return
-	case "水球":
-		enemies := targetTroop.AliveRoles()
-		n := len(enemies)
-		// 只需選擇一個
-		i := a.seed % n
-		target := enemies[i]
-		target.Hp -= skill2.Waterball.Damage
-		fmt.Printf("%s 對 %s 使用了 %s。\n", role.GetName(), target.GetName(), skill)
-		fmt.Printf("%s 對 %s 造成 %d 點傷害。\n", role.GetName(), target.GetName(), skill2.Waterball.Damage)
-		return
-	case "火球":
-		enemies := targetTroop.AliveRoles()
-		var str []string
-		for _, enemy := range enemies {
-			str = append(str, enemy.GetName())
+	s := a.selectSkill(role)
+	targetCount := s.Area[skill.Enemy]
+	if targetCount != 0 {
+		targets := targetTroop.AliveRoles()
+		if targetCount > 0 && targetCount < len(targets) {
+			a.selectTarget(role, len(targets))
+			// 選擇敵方目標
+			targets = selectTarget(role, targets)
 		}
-		fmt.Printf("%s 對 %s 使用了 %s。\n", role.GetName(), strings.Join(str, ", "), skill)
-		for _, enemy := range enemies {
-			enemy.Hp -= skill2.Fireball.Damage
-			fmt.Printf("%s 對 %s 造成 %d 點傷害。\n", role.GetName(), enemy.GetName(), skill2.Fireball.Damage)
-		}
-		return
+		castSkill(role, s, targets)
 	}
+}
+
+func (a *AI) selectSkill(role *Role) *skill.Skill {
+	var s *skill.Skill
+	actionCount := len(role.Skills)
+	for {
+		role.controller.AddCommand(strconv.Itoa(a.seed % actionCount))
+		s = selectSkill(role)
+		if s != nil {
+			break
+		}
+		a.seed += 1
+	}
+	return s
+}
+
+func (a *AI) selectTarget(role *Role, n int) {
+	var ints []int
+	for i := a.seed % n; i < n; i++ {
+		if i == n {
+			i = 0
+		}
+		ints = append(ints, i)
+	}
+	cmd := strings.Trim(strings.Join(strings.Split(fmt.Sprint(ints), " "), ", "), "[]")
+	role.controller.AddCommand(cmd)
 }

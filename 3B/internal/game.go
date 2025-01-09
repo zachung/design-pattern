@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -39,8 +38,8 @@ func Run(initConfig []string) {
 			troop.AddRole(role)
 			continue
 		}
-		// TODO: 指令轉換成 行動準則
-		fmt.Printf("run command %v\n", s)
+		// 指令轉換成 行動準則
+		battle.troops[0].roles[0].controller.AddCommand(s)
 	}
 	// 開始戰鬥
 	battle.Start()

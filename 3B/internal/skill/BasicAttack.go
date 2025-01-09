@@ -2,23 +2,20 @@ package skill
 
 type Area int
 
-const (
-	Enemy Area = iota
-	Ally
-	AllEnemy
-	AllAlly
-	All
-)
-
 type Targets int
 
+const (
+	Enemy Targets = iota
+	Ally
+)
+
 type Skill struct {
+	Name   string
 	MpCost int
-	Area
-	Targets
+	Area   []int
 	Damage int
 }
 
-var BasicAttack = Skill{MpCost: 0, Area: Enemy, Targets: 1}
-var Waterball = Skill{MpCost: 50, Area: Enemy, Targets: 1, Damage: 120}
-var Fireball = Skill{MpCost: 50, Area: AllEnemy, Damage: 50}
+var BasicAttack = Skill{Name: "普通攻擊", MpCost: 0, Area: []int{1, 0}}
+var Waterball = Skill{Name: "水球", MpCost: 50, Area: []int{1, 0}, Damage: 120}
+var Fireball = Skill{Name: "火球", MpCost: 50, Area: []int{-1, 0}, Damage: 50}
