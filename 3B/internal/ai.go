@@ -8,41 +8,37 @@ import (
 )
 
 type AI struct {
+	role *Role
 	seed int
 }
 
-func (a *AI) Action(role *Role, targetTroop *Troop) {
-	defer func() {
-		a.seed += 1
-	}()
-	s := a.selectSkill(role)
-	targetCount := s.Area[skill.Enemy]
-	if targetCount != 0 {
-		targets := targetTroop.AliveRoles()
-		if targetCount > 0 && targetCount < len(targets) {
-			a.selectTarget(role, len(targets))
-			// 選擇敵方目標
-			targets = selectTarget(role, targets)
-		}
-		castSkill(role, s, targets)
-	}
-}
-
-func (a *AI) selectSkill(role *Role) *skill.Skill {
+func (a *AI) Action(targetTroop *Troop) {
 	var s *skill.Skill
-	actionCount := len(role.Skills)
 	for {
-		role.controller.AddCommand(strconv.Itoa(a.seed % actionCount))
-		s = selectSkill(role)
+		s = a.selectSkill()
 		if s != nil {
 			break
 		}
 		a.seed += 1
 	}
-	return s
+	targetCount := s.Area[skill.Enemy]
+	if targetCount != 0 {
+		targets := targetTroop.AliveRoles()
+		if targetCount > 0 && targetCount < len(targets) {
+			targets = a.selectTarget(targets, targetCount)
+		}
+		a.role.CastSkill(s, targets)
+	}
+	a.seed += 1
 }
 
-func (a *AI) selectTarget(role *Role, n int) {
+func (a *AI) selectSkill() *skill.Skill {
+	a.role.controller.AddCommand(strconv.Itoa(a.seed % len(a.role.Skills)))
+	return a.role.SelectSkill()
+}
+
+func (a *AI) selectTarget(enemies []*Role, targetCount int) []*Role {
+	n := len(enemies)
 	var ints []int
 	for i := a.seed % n; i < n; i++ {
 		if i == n {
@@ -51,5 +47,7 @@ func (a *AI) selectTarget(role *Role, n int) {
 		ints = append(ints, i)
 	}
 	cmd := strings.Trim(strings.Join(strings.Split(fmt.Sprint(ints), " "), ", "), "[]")
-	role.controller.AddCommand(cmd)
+	a.role.controller.AddCommand(cmd)
+
+	return a.role.SelectTarget(enemies, targetCount)
 }
