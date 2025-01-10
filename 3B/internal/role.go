@@ -44,7 +44,21 @@ func (r *Role) GetName() string {
 
 func (r *Role) Action(targetTroop *Troop) {
 	fmt.Printf("輪到 %s (HP: %d, MP: %d, STR: %d, State: %s)。\n", r.GetName(), r.Hp, r.Mp, r.Str, r.State)
-	r.actor.Action(targetTroop)
+	var s *skill.Skill
+	for {
+		s = r.actor.SelectSkill()
+		if s != nil {
+			break
+		}
+	}
+	targetCount := s.Area[skill.Enemy]
+	if targetCount != 0 {
+		targets := targetTroop.AliveRoles()
+		if targetCount > 0 && targetCount < len(targets) {
+			targets = r.actor.SelectTarget(targets, targetCount)
+		}
+		r.actor.CastSkill(s, targets)
+	}
 }
 
 func (r *Role) SelectSkill(selected int) *skill.Skill {
