@@ -47,7 +47,7 @@ func (r *Role) Action(targetTroop *Troop) {
 	r.actor.Action(targetTroop)
 }
 
-func (r *Role) SelectSkill() *skill.Skill {
+func (r *Role) SelectSkill(selected int) *skill.Skill {
 	var actionList []string
 	for i, s := range r.Skills {
 		actionList = append(actionList, fmt.Sprintf("(%d) %s", i, s))
@@ -55,10 +55,8 @@ func (r *Role) SelectSkill() *skill.Skill {
 	// print 選擇行動
 	fmt.Printf("選擇行動：%v\n", strings.Join(actionList, " "))
 
-	i := r.controller.PullCommand()[0]
-
 	var s *skill.Skill
-	str := r.Skills[i]
+	str := r.Skills[selected]
 	switch str {
 	case "普通攻擊":
 		return &skill.BasicAttack
@@ -77,7 +75,7 @@ func (r *Role) SelectSkill() *skill.Skill {
 	return s
 }
 
-func (r *Role) SelectTarget(enemies []*Role, targetCount int) (targets []*Role) {
+func (r *Role) SelectTarget(enemies []*Role, targetCount int, selected []int) (targets []*Role) {
 	// 需要選擇敵方目標
 	var targetList []string
 	for i, t := range enemies {
@@ -86,8 +84,7 @@ func (r *Role) SelectTarget(enemies []*Role, targetCount int) (targets []*Role) 
 	fmt.Printf("選擇 %d 位目標: %s\n", targetCount, strings.Join(targetList, " "))
 
 	// 選擇敵方目標
-	command := r.controller.PullCommand()
-	for _, i := range command {
+	for _, i := range selected {
 		targets = append(targets, enemies[i])
 	}
 

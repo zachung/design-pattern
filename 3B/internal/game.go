@@ -13,6 +13,7 @@ type Game struct {
 func Run(initConfig []string) {
 	var troop *Troop
 	var battle = Battle{troops: make([]*Troop, 0)}
+	var cmdStrs []string
 	for _, s := range initConfig {
 		r := regexp.MustCompile(`#軍隊-(\d)-(.*)`)
 		match := r.FindStringSubmatch(s)
@@ -38,9 +39,19 @@ func Run(initConfig []string) {
 			troop.AddRole(role)
 			continue
 		}
-		// 指令轉換成 行動準則
-		battle.troops[0].roles[0].controller.AddCommand(s)
+		// 行動準則
+		cmdStrs = append(cmdStrs, s)
 	}
+	go func() {
+		for _, s := range cmdStrs {
+			cmds := strings.Split(s, ", ")
+			ints := make([]int, len(cmds))
+			for i, cmd := range cmds {
+				ints[i], _ = strconv.Atoi(cmd)
+			}
+			battle.troops[0].roles[0].controller.AddCommand(ints)
+		}
+	}()
 	// 開始戰鬥
 	battle.Start()
 }

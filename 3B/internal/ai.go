@@ -2,9 +2,6 @@ package internal
 
 import (
 	"3B/internal/skill"
-	"fmt"
-	"strconv"
-	"strings"
 )
 
 type AI struct {
@@ -33,8 +30,7 @@ func (a *AI) Action(targetTroop *Troop) {
 }
 
 func (a *AI) selectSkill() *skill.Skill {
-	a.role.controller.AddCommand(strconv.Itoa(a.seed % len(a.role.Skills)))
-	return a.role.SelectSkill()
+	return a.role.SelectSkill(a.seed % len(a.role.Skills))
 }
 
 func (a *AI) selectTarget(enemies []*Role, targetCount int) []*Role {
@@ -46,8 +42,6 @@ func (a *AI) selectTarget(enemies []*Role, targetCount int) []*Role {
 		}
 		ints = append(ints, i)
 	}
-	cmd := strings.Trim(strings.Join(strings.Split(fmt.Sprint(ints), " "), ", "), "[]")
-	a.role.controller.AddCommand(cmd)
 
-	return a.role.SelectTarget(enemies, targetCount)
+	return a.role.SelectTarget(enemies, targetCount, ints)
 }
