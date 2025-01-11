@@ -10,6 +10,7 @@ import (
 type RoleImpl struct {
 	Name        string
 	Hp, Mp, Str int
+	MaxHp       int
 	Skills      []string
 	State       string
 	troop       contract.Troop
@@ -21,6 +22,7 @@ func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string
 	return &RoleImpl{
 		Name:   name,
 		Hp:     hp,
+		MaxHp:  hp,
 		Mp:     mp,
 		Str:    str,
 		Skills: skills,
@@ -78,6 +80,9 @@ func (r *RoleImpl) SubHp(damage int) {
 
 func (r *RoleImpl) AddHp(health int) {
 	r.Hp += health
+	if r.Hp > r.MaxHp {
+		r.Hp = r.MaxHp
+	}
 }
 
 func (r *RoleImpl) GetStr() int {
