@@ -1,29 +1,24 @@
 package internal
 
 import (
-	"3B/internal/skill"
+	"3B/internal/contract"
 )
 
-type Actor interface {
-	SelectSkill() *skill.Skill
-	SelectTarget(enemies []*Role, targetCount int) []*Role
-	CastSkill(s *skill.Skill, targets []*Role)
-}
-
 type Round struct {
-	role *Role
+	role       contract.Role
+	controller *Controller
 }
 
-func (r *Round) SelectSkill() *skill.Skill {
-	selected := r.role.controller.PullCommand()[0]
+func (r *Round) SelectSkill(skillCount int) contract.Skill {
+	selected := r.controller.PullCommand()[0]
 	return r.role.SelectSkill(selected)
 }
 
-func (r *Round) SelectTarget(enemies []*Role, targetCount int) []*Role {
-	command := r.role.controller.PullCommand()
+func (r *Round) SelectTarget(enemies []contract.Role, targetCount int) []contract.Role {
+	command := r.controller.PullCommand()
 	return r.role.SelectTarget(enemies, targetCount, command)
 }
 
-func (r *Round) CastSkill(s *skill.Skill, targets []*Role) {
-	r.role.CastSkill(s, targets)
+func (r *Round) CastSkill(s contract.Skill, ally contract.Troop, enemy contract.Troop) {
+	s.Cast(r.role, ally, enemy)
 }

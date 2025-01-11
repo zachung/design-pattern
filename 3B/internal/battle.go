@@ -1,35 +1,36 @@
 package internal
 
-import "fmt"
+import (
+	"3B/internal/contract"
+	"fmt"
+)
 
 type Battle struct {
-	troops []*Troop
+	troops []contract.Troop
+	hero   contract.Role
 }
 
-func (b *Battle) Start() {
+func (b *Battle) Start(hero contract.Role) {
 	fmt.Println("Starting Battle")
+	b.hero = hero
 	for {
-		for _, role := range b.troops[0].roles {
-			if !role.IsDead() {
-				if b.IsEnd() {
-					return
-				}
-				role.Action(b.troops[1])
+		for _, role := range b.troops[0].AliveRoles() {
+			role.Action(b.troops[1])
+			if b.IsEnd() {
+				return
 			}
 		}
-		for _, role := range b.troops[1].roles {
-			if !role.IsDead() {
-				if b.IsEnd() {
-					return
-				}
-				role.Action(b.troops[0])
+		for _, role := range b.troops[1].AliveRoles() {
+			role.Action(b.troops[0])
+			if b.IsEnd() {
+				return
 			}
 		}
 	}
 }
 
 func (b *Battle) IsEnd() bool {
-	if b.troops[0].roles[0].IsDead() {
+	if b.hero.IsDead() {
 		fmt.Println("你失敗了！")
 		return true
 	}

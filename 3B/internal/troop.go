@@ -1,18 +1,23 @@
 package internal
 
-type Troop struct {
+import "3B/internal/contract"
+
+type TroopImpl struct {
 	I      int
-	roles  []*Role
+	roles  []contract.Role
 	battle *Battle
 }
 
-func (t *Troop) AddRole(role *Role) {
-	role.troop = t
+func (t *TroopImpl) GetI() int {
+	return t.I
+}
+
+func (t *TroopImpl) AddRole(role contract.Role) {
 	t.roles = append(t.roles, role)
 }
 
-func (t *Troop) AliveRoles() []*Role {
-	roles := make([]*Role, 0)
+func (t *TroopImpl) AliveRoles() []contract.Role {
+	roles := make([]contract.Role, 0)
 	for _, role := range t.roles {
 		if !role.IsDead() {
 			roles = append(roles, role)
@@ -21,6 +26,6 @@ func (t *Troop) AliveRoles() []*Role {
 	return roles
 }
 
-func (t *Troop) IsAnnihilated() bool {
+func (t *TroopImpl) IsAnnihilated() bool {
 	return len(t.AliveRoles()) <= 0
 }
