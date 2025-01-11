@@ -17,6 +17,7 @@ type Role interface {
 	//CastSkill(s Skill, targets []Role)
 	Actor() Actor
 	SubHp(damage int)
+	AddHp(hp int)
 	GetStr() int
 	GetMp() int
 	SubMp(mp int)

@@ -70,6 +70,8 @@ func (r *RoleImpl) SelectSkill(selected int) contract.Skill {
 		s = &skill.Waterball{}
 	case "火球":
 		s = &skill.Fireball{}
+	case "自我治療":
+		s = &skill.SelfHealing{}
 	}
 	if s == nil {
 		return nil
@@ -83,6 +85,10 @@ func (r *RoleImpl) SelectSkill(selected int) contract.Skill {
 
 func (r *RoleImpl) SubHp(damage int) {
 	r.Hp -= damage
+}
+
+func (r *RoleImpl) AddHp(health int) {
+	r.Hp += health
 }
 
 func (r *RoleImpl) GetStr() int {
