@@ -61,18 +61,7 @@ func (r *RoleImpl) SelectSkill(selected int) contract.Skill {
 	// print 選擇行動
 	fmt.Printf("選擇行動：%v\n", strings.Join(actionList, " "))
 
-	var s contract.Skill
-	str := r.Skills[selected]
-	switch str {
-	case "普通攻擊":
-		s = &skill.BasicAttack{}
-	case "水球":
-		s = &skill.Waterball{}
-	case "火球":
-		s = &skill.Fireball{}
-	case "自我治療":
-		s = &skill.SelfHealing{}
-	}
+	s := skill.GetSkill(r.Skills[selected])
 	if s == nil {
 		return nil
 	}
