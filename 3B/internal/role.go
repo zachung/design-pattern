@@ -3,6 +3,7 @@ package internal
 import (
 	"3B/internal/contract"
 	"3B/internal/skill"
+	"3B/internal/state"
 	"fmt"
 	"strings"
 )
@@ -12,7 +13,7 @@ type RoleImpl struct {
 	Hp, Mp, Str int
 	MaxHp       int
 	Skills      []string
-	State       string
+	State       contract.State
 	troop       contract.Troop
 	actor       contract.Actor
 	commands    []string
@@ -26,7 +27,7 @@ func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string
 		Mp:     mp,
 		Str:    str,
 		Skills: skills,
-		State:  "正常",
+		State:  state.GetState("正常"),
 		troop:  troop,
 	}
 }
@@ -45,6 +46,7 @@ func (r *RoleImpl) GetName() string {
 
 func (r *RoleImpl) Action(targetTroop contract.Troop) {
 	fmt.Printf("輪到 %s (HP: %d, MP: %d, STR: %d, State: %s)。\n", r.GetName(), r.Hp, r.Mp, r.Str, r.State)
+	r.State.BeforeRound()
 	var s contract.Skill
 	for {
 		s = r.actor.SelectSkill(len(r.Skills))
@@ -53,6 +55,10 @@ func (r *RoleImpl) Action(targetTroop contract.Troop) {
 		}
 	}
 	r.actor.CastSkill(s, r.troop, targetTroop)
+	r.State.AfterRound()
+	if r.State.IsFinished() {
+		r.SetState(state.GetState("正常"))
+	}
 }
 
 func (r *RoleImpl) SelectSkill(selected int) contract.Skill {
@@ -95,6 +101,10 @@ func (r *RoleImpl) GetMp() int {
 
 func (r *RoleImpl) SubMp(mp int) {
 	r.Mp -= mp
+}
+
+func (r *RoleImpl) SetState(state contract.State) {
+	r.State = state
 }
 
 func (r *RoleImpl) Actor() contract.Actor {

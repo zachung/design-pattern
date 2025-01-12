@@ -14,13 +14,13 @@ type Role interface {
 	Action(targetTroop Troop)
 	SelectSkill(selected int) Skill
 	SelectTarget(enemies []Role, targetCount int, selected []int) (targets []Role)
-	//CastSkill(s Skill, targets []Role)
 	Actor() Actor
 	SubHp(damage int)
 	AddHp(hp int)
 	GetStr() int
 	GetMp() int
 	SubMp(mp int)
+	SetState(state State)
 }
 
 type Skill interface {
@@ -33,4 +33,10 @@ type Actor interface {
 	SelectSkill(skillCount int) Skill
 	SelectTarget(enemies []Role, targetCount int) []Role
 	CastSkill(s Skill, ally Troop, enemy Troop)
+}
+
+type State interface {
+	BeforeRound()
+	AfterRound()
+	IsFinished() bool
 }
