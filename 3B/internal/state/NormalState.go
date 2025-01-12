@@ -1,16 +1,22 @@
 package state
 
-type NormalState struct{}
+type NormalState struct {
+	name string
+}
 
 func NewNormalState() *NormalState {
-	return &NormalState{}
+	return &NormalState{name: "正常"}
 }
 
-func (s *NormalState) BeforeRound() {
-
+func (s *NormalState) GetName() string {
+	return s.name
 }
 
-func (s *NormalState) AfterRound() {
+func (s *NormalState) CanAction() bool {
+	return true
+}
+
+func (s *NormalState) AfterAction() {
 }
 
 func (s *NormalState) IsFinished() bool {

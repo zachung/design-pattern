@@ -36,7 +36,8 @@ type Actor interface {
 }
 
 type State interface {
-	BeforeRound()
-	AfterRound()
+	GetName() string
+	CanAction() bool
+	AfterAction()
 	IsFinished() bool
 }

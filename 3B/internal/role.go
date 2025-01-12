@@ -45,8 +45,16 @@ func (r *RoleImpl) GetName() string {
 }
 
 func (r *RoleImpl) Action(targetTroop contract.Troop) {
-	fmt.Printf("輪到 %s (HP: %d, MP: %d, STR: %d, State: %s)。\n", r.GetName(), r.Hp, r.Mp, r.Str, r.State)
-	r.State.BeforeRound()
+	defer func() {
+		r.State.AfterAction()
+		if r.State.IsFinished() {
+			r.SetState(state.GetState("正常"))
+		}
+	}()
+	fmt.Printf("輪到 %s (HP: %d, MP: %d, STR: %d, State: %s)。\n", r.GetName(), r.Hp, r.Mp, r.Str, r.State.GetName())
+	if !r.State.CanAction() {
+		return
+	}
 	var s contract.Skill
 	for {
 		s = r.actor.SelectSkill(len(r.Skills))
@@ -55,10 +63,6 @@ func (r *RoleImpl) Action(targetTroop contract.Troop) {
 		}
 	}
 	r.actor.CastSkill(s, r.troop, targetTroop)
-	r.State.AfterRound()
-	if r.State.IsFinished() {
-		r.SetState(state.GetState("正常"))
-	}
 }
 
 func (r *RoleImpl) SelectSkill(selected int) contract.Skill {

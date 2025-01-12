@@ -12,6 +12,8 @@ func GetSkill(name string) contract.Skill {
 		return &Fireball{}
 	case "自我治療":
 		return &SelfHealing{}
+	case "石化":
+		return NewPetrochemical()
 	}
 	panic("skill " + name + " not found")
 }
