@@ -7,12 +7,17 @@ import (
 )
 
 type BasicAttack struct {
-	Name   string
-	MpCost int
+	name string
+}
+
+func NewBasicAttack() contract.Skill {
+	return &BasicAttack{
+		name: "普通攻擊",
+	}
 }
 
 func (a *BasicAttack) GetName() string {
-	return "普通攻擊"
+	return a.name
 }
 
 func (a *BasicAttack) CanCast(role contract.Role) bool {

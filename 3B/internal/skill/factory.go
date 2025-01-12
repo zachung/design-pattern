@@ -5,13 +5,13 @@ import "3B/internal/contract"
 func GetSkill(name string) contract.Skill {
 	switch name {
 	case "普通攻擊":
-		return &BasicAttack{}
+		return NewBasicAttack()
 	case "水球":
-		return &Waterball{}
+		return NewWaterball()
 	case "火球":
-		return &Fireball{}
+		return NewFireball()
 	case "自我治療":
-		return &SelfHealing{}
+		return NewSelfHealing()
 	case "石化":
 		return NewPetrochemical()
 	}

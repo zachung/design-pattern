@@ -6,19 +6,29 @@ import (
 )
 
 type SelfHealing struct {
-	Name string
+	name   string
+	mpCost int
+	addHp  int
+}
+
+func NewSelfHealing() contract.Skill {
+	return &SelfHealing{
+		name:   "自我治療",
+		mpCost: 50,
+		addHp:  150,
+	}
 }
 
 func (a *SelfHealing) GetName() string {
-	return "自我治療"
+	return a.name
 }
 
 func (a *SelfHealing) CanCast(role contract.Role) bool {
-	return role.GetMp() >= 50
+	return role.GetMp() >= a.mpCost
 }
 
 func (a *SelfHealing) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
-	role.SubMp(50)
-	role.AddHp(150)
+	role.SubMp(a.mpCost)
+	role.AddHp(a.addHp)
 	fmt.Printf("%s 使用了 %s。\n", role.GetName(), a.GetName())
 }
