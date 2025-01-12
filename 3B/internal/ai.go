@@ -11,9 +11,7 @@ type AI struct {
 
 func (a *AI) SelectSkill(skillCount int) contract.Skill {
 	s := a.role.SelectSkill(a.seed % skillCount)
-	if s == nil {
-		a.seed += 1
-	}
+	a.seed += 1
 	return s
 }
 
@@ -25,6 +23,10 @@ func (a *AI) SelectTarget(enemies []contract.Role, targetCount int) []contract.R
 			i = 0
 		}
 		ints = append(ints, i)
+		if len(ints) == targetCount {
+			// 已選到足夠數量
+			break
+		}
 	}
 
 	return a.role.SelectTarget(enemies, targetCount, ints)

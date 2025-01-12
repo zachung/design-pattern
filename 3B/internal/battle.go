@@ -14,18 +14,39 @@ func (b *Battle) Start(hero contract.Role) {
 	fmt.Println("Starting Battle")
 	b.hero = hero
 	for {
-		for _, role := range b.troops[0].AliveRoles() {
-			role.Action(b.troops[1])
+		if b.round(0, 1) {
+			return
+		}
+		if b.round(1, 0) {
+			return
+		}
+	}
+}
+
+func (b *Battle) round(team1Index, team2Index int) bool {
+	i := 0
+	for {
+		role := b.troopAction(b.troops[team1Index], i)
+		if role == nil {
+			return false
+		}
+		if !role.IsDead() {
+			role.Action(b.troops[team2Index])
 			if b.IsEnd() {
-				return
+				return true
 			}
 		}
-		for _, role := range b.troops[1].AliveRoles() {
-			role.Action(b.troops[0])
-			if b.IsEnd() {
-				return
-			}
+		i++
+	}
+}
+
+func (b *Battle) troopAction(team1 contract.Troop, cur int) (role contract.Role) {
+	for {
+		team1 := team1.(*TroopImpl)
+		if cur >= len(team1.roles) {
+			return nil
 		}
+		return team1.roles[cur]
 	}
 }
 

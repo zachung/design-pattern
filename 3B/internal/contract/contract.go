@@ -2,6 +2,7 @@ package contract
 
 type Troop interface {
 	GetI() int
+	NewRole(data string) Role
 	AddRole(role Role)
 	AliveRoles() []Role
 	IsAnnihilated() bool
@@ -21,6 +22,7 @@ type Role interface {
 	GetMp() int
 	SubMp(mp int)
 	SetState(state State)
+	SetObserver(event Event, observer func())
 }
 
 type Skill interface {
@@ -42,3 +44,9 @@ type State interface {
 	AfterAction()
 	IsFinished() bool
 }
+
+type Event int
+
+const (
+	OnDead Event = iota
+)

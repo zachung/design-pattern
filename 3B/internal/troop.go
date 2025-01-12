@@ -1,6 +1,10 @@
 package internal
 
-import "3B/internal/contract"
+import (
+	"3B/internal/contract"
+	"strconv"
+	"strings"
+)
 
 type TroopImpl struct {
 	I      int
@@ -10,6 +14,19 @@ type TroopImpl struct {
 
 func (t *TroopImpl) GetI() int {
 	return t.I
+}
+
+func (t *TroopImpl) NewRole(data string) contract.Role {
+	properties := strings.Split(data, " ")
+	name := properties[0]
+	hp, _ := strconv.Atoi(properties[1])
+	mp, _ := strconv.Atoi(properties[2])
+	str, _ := strconv.Atoi(properties[3])
+	skills := append([]string{"普通攻擊"}, properties[4:]...)
+	role := NewRole(t, name, hp, mp, str, skills)
+	role.SetActor(&AI{role: role})
+
+	return role
 }
 
 func (t *TroopImpl) AddRole(role contract.Role) {

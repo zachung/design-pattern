@@ -1,0 +1,32 @@
+package internal
+
+import (
+	"3B/internal/contract"
+	"fmt"
+	"strings"
+)
+
+type HeroAction struct {
+	role       contract.Role
+	controller *Controller
+}
+
+func (r *HeroAction) SelectSkill(skillCount int) contract.Skill {
+	selected := r.controller.PullCommand()[0]
+	return r.role.SelectSkill(selected)
+}
+
+func (r *HeroAction) SelectTarget(enemies []contract.Role, targetCount int) []contract.Role {
+	// 需要選擇敵方目標
+	var targetList []string
+	for i, t := range enemies {
+		targetList = append(targetList, fmt.Sprintf("(%d) %s", i, t.GetName()))
+	}
+	fmt.Printf("選擇 %d 位目標: %s\n", targetCount, strings.Join(targetList, " "))
+	command := r.controller.PullCommand()
+	return r.role.SelectTarget(enemies, targetCount, command)
+}
+
+func (r *HeroAction) CastSkill(s contract.Skill, ally contract.Troop, enemy contract.Troop) {
+	s.Cast(r.role, ally, enemy)
+}

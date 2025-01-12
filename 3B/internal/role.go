@@ -17,18 +17,20 @@ type RoleImpl struct {
 	troop       contract.Troop
 	actor       contract.Actor
 	commands    []string
+	observers   map[contract.Event]func()
 }
 
 func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string) contract.Role {
 	return &RoleImpl{
-		Name:   name,
-		Hp:     hp,
-		MaxHp:  hp,
-		Mp:     mp,
-		Str:    str,
-		Skills: skills,
-		State:  state.GetState("正常"),
-		troop:  troop,
+		Name:      name,
+		Hp:        hp,
+		MaxHp:     hp,
+		Mp:        mp,
+		Str:       str,
+		Skills:    skills,
+		State:     state.GetState("正常"),
+		troop:     troop,
+		observers: map[contract.Event]func(){},
 	}
 }
 
@@ -91,6 +93,10 @@ func (r *RoleImpl) SelectSkill(selected int) contract.Skill {
 func (r *RoleImpl) SubHp(damage int) {
 	r.Hp -= damage
 	if r.IsDead() {
+		f := r.observers[contract.OnDead]
+		if f != nil {
+			f()
+		}
 		fmt.Printf("%s 死亡。\n", r.GetName())
 	}
 }
@@ -123,17 +129,14 @@ func (r *RoleImpl) Actor() contract.Actor {
 }
 
 func (r *RoleImpl) SelectTarget(enemies []contract.Role, targetCount int, selected []int) (targets []contract.Role) {
-	// 需要選擇敵方目標
-	var targetList []string
-	for i, t := range enemies {
-		targetList = append(targetList, fmt.Sprintf("(%d) %s", i, t.GetName()))
-	}
-	fmt.Printf("選擇 %d 位目標: %s\n", targetCount, strings.Join(targetList, " "))
-
 	// 選擇敵方目標
 	for _, i := range selected {
 		targets = append(targets, enemies[i])
 	}
 
 	return
+}
+
+func (r *RoleImpl) SetObserver(event contract.Event, observer func()) {
+	r.observers[event] = observer
 }

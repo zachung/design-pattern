@@ -32,22 +32,15 @@ func Run(initConfig []string) {
 			continue
 		}
 		if len(battle.troops) < 2 {
-			// 添加角色
-			properties := strings.Split(s, " ")
-			name := properties[0]
-			hp, _ := strconv.Atoi(properties[1])
-			mp, _ := strconv.Atoi(properties[2])
-			str, _ := strconv.Atoi(properties[3])
-			skills := append([]string{"普通攻擊"}, properties[4:]...)
-			role := NewRole(troop, name, hp, mp, str, skills)
-			var actor contract.Actor
-			if name == "英雄" {
-				actor = &Round{role: role, controller: controller}
-				hero = role
-			} else {
-				actor = &AI{role: role}
+			if troop == nil {
+				panic("軍隊還沒建立")
 			}
-			role.SetActor(actor)
+			// 添加角色
+			role := troop.NewRole(s)
+			if strings.Contains(role.GetName(), "英雄") {
+				hero = role
+				role.SetActor(&HeroAction{role: role, controller: controller})
+			}
 			troop.AddRole(role)
 			continue
 		}
