@@ -38,6 +38,7 @@ type Actor interface {
 type State interface {
 	GetName() string
 	CanAction() bool
+	BeforeAction()
 	AfterAction()
 	IsFinished() bool
 }

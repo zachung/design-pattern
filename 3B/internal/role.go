@@ -55,6 +55,10 @@ func (r *RoleImpl) Action(targetTroop contract.Troop) {
 	if !r.State.CanAction() {
 		return
 	}
+	r.State.BeforeAction()
+	if r.IsDead() {
+		return
+	}
 	var s contract.Skill
 	for {
 		s = r.actor.SelectSkill(len(r.Skills))
@@ -86,6 +90,9 @@ func (r *RoleImpl) SelectSkill(selected int) contract.Skill {
 
 func (r *RoleImpl) SubHp(damage int) {
 	r.Hp -= damage
+	if r.IsDead() {
+		fmt.Printf("%s 死亡。\n", r.GetName())
+	}
 }
 
 func (r *RoleImpl) AddHp(health int) {

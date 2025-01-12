@@ -17,6 +17,9 @@ func (s *Petrochemical) CanAction() bool {
 	return false
 }
 
+func (s *Petrochemical) BeforeAction() {
+}
+
 func (s *Petrochemical) AfterAction() {
 	s.round -= 1
 }

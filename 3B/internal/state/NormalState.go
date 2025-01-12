@@ -16,6 +16,9 @@ func (s *NormalState) CanAction() bool {
 	return true
 }
 
+func (s *NormalState) BeforeAction() {
+}
+
 func (s *NormalState) AfterAction() {
 }
 
