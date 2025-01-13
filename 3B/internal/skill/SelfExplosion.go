@@ -25,7 +25,7 @@ func (a *SelfExplosion) GetName() string {
 }
 
 func (a *SelfExplosion) CanCast(role contract.Role) bool {
-	return role.GetMp() >= a.mpCost
+	return role.Property(contract.Mp).Get() >= a.mpCost
 }
 
 func (a *SelfExplosion) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
@@ -39,7 +39,7 @@ func (a *SelfExplosion) Cast(role contract.Role, ally contract.Troop, enemy cont
 	}
 	targets = append(targets, enemy.AliveRoles()...)
 
-	role.SubMp(a.mpCost)
+	role.Property(contract.Mp).Sub(a.mpCost)
 
 	var str []string
 	for _, enemy := range targets {
@@ -49,8 +49,8 @@ func (a *SelfExplosion) Cast(role contract.Role, ally contract.Troop, enemy cont
 	for _, enemy := range targets {
 		damage := role.MakeDamage(a.damage)
 		fmt.Printf("%s 對 %s 造成 %d 點傷害。\n", role.GetName(), enemy.GetName(), damage)
-		enemy.SubHp(damage)
+		enemy.Property(contract.Hp).Sub(damage)
 	}
 	// 使自己死亡
-	role.SubHp(role.GetHp())
+	role.Property(contract.Hp).Sub(role.Property(contract.Hp).Get())
 }

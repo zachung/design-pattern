@@ -24,7 +24,7 @@ func (a *Cheerup) GetName() string {
 }
 
 func (a *Cheerup) CanCast(role contract.Role) bool {
-	return role.GetMp() >= a.mpCost
+	return role.Property(contract.Mp).Get() >= a.mpCost
 }
 
 func (a *Cheerup) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
@@ -40,7 +40,7 @@ func (a *Cheerup) Cast(role contract.Role, ally contract.Troop, enemy contract.T
 	if targetCount < len(targets) {
 		targets = role.Actor().SelectTarget(targets, targetCount)
 	}
-	role.SubMp(a.mpCost)
+	role.Property(contract.Mp).Sub(a.mpCost)
 
 	var str []string
 	for _, enemy := range targets {

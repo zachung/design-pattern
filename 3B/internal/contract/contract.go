@@ -16,15 +16,10 @@ type Role interface {
 	SelectSkill(selected int) Skill
 	SelectTarget(enemies []Role, targetCount int, selected []int) (targets []Role)
 	Actor() Actor
-	SubHp(damage int)
-	AddHp(hp int)
-	GetStr() int
-	GetHp() int
-	GetMp() int
-	SubMp(mp int)
 	SetState(state State)
 	SetObserver(event Event, observer func())
 	MakeDamage(damage int) int
+	Property(key PropertyKey) Property
 }
 
 type Skill interface {
@@ -53,3 +48,18 @@ type Event int
 const (
 	OnDead Event = iota
 )
+
+type PropertyKey int
+
+const (
+	Hp PropertyKey = iota
+	Mp
+	Str
+)
+
+type Property interface {
+	Get() int
+	Sub(v int)
+	Add(v int)
+	AddObserver(observer func(*int))
+}

@@ -9,29 +9,42 @@ import (
 )
 
 type RoleImpl struct {
-	Name        string
-	Hp, Mp, Str int
-	MaxHp       int
-	Skills      []string
-	State       contract.State
-	troop       contract.Troop
-	actor       contract.Actor
-	commands    []string
-	observers   map[contract.Event]func()
+	Name       string
+	properties map[contract.PropertyKey]contract.Property
+	MaxHp      int
+	Skills     []string
+	State      contract.State
+	troop      contract.Troop
+	actor      contract.Actor
+	commands   []string
+	observers  map[contract.Event]func()
 }
 
 func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string) contract.Role {
-	return &RoleImpl{
-		Name:      name,
-		Hp:        hp,
-		MaxHp:     hp,
-		Mp:        mp,
-		Str:       str,
-		Skills:    skills,
-		State:     state.GetState("正常"),
-		troop:     troop,
-		observers: map[contract.Event]func(){},
+	properties := map[contract.PropertyKey]contract.Property{
+		contract.Hp:  NewProperty(hp),
+		contract.Mp:  NewProperty(mp),
+		contract.Str: NewProperty(str),
 	}
+	role := &RoleImpl{
+		Name:       name,
+		MaxHp:      hp,
+		Skills:     skills,
+		State:      state.GetState("正常"),
+		troop:      troop,
+		observers:  map[contract.Event]func(){},
+		properties: properties,
+	}
+	// observer dead event
+	properties[contract.Hp].AddObserver(func(v *int) {
+		if *v <= 0 {
+			fmt.Printf("%s 死亡。\n", role.GetName())
+		}
+		if *v > hp {
+			*v = hp
+		}
+	})
+	return role
 }
 
 func (r *RoleImpl) SetActor(actor contract.Actor) {
@@ -39,7 +52,7 @@ func (r *RoleImpl) SetActor(actor contract.Actor) {
 }
 
 func (r *RoleImpl) IsDead() bool {
-	return r.Hp <= 0
+	return r.Property(contract.Hp).Get() <= 0
 }
 
 func (r *RoleImpl) GetName() string {
@@ -53,7 +66,14 @@ func (r *RoleImpl) Action(targetTroop contract.Troop) {
 			r.SetState(state.GetState("正常"))
 		}
 	}()
-	fmt.Printf("輪到 %s (HP: %d, MP: %d, STR: %d, State: %s)。\n", r.GetName(), r.Hp, r.Mp, r.Str, r.State.GetName())
+	fmt.Printf(
+		"輪到 %s (HP: %d, MP: %d, STR: %d, State: %s)。\n",
+		r.GetName(),
+		r.Property(contract.Hp).Get(),
+		r.Property(contract.Mp).Get(),
+		r.Property(contract.Str).Get(),
+		r.State.GetName(),
+	)
 	if !r.State.CanAction() {
 		return
 	}
@@ -90,40 +110,6 @@ func (r *RoleImpl) SelectSkill(selected int) contract.Skill {
 	return s
 }
 
-func (r *RoleImpl) SubHp(damage int) {
-	r.Hp -= damage
-	if r.IsDead() {
-		f := r.observers[contract.OnDead]
-		if f != nil {
-			f()
-		}
-		fmt.Printf("%s 死亡。\n", r.GetName())
-	}
-}
-
-func (r *RoleImpl) AddHp(health int) {
-	r.Hp += health
-	if r.Hp > r.MaxHp {
-		r.Hp = r.MaxHp
-	}
-}
-
-func (r *RoleImpl) GetStr() int {
-	return r.Str
-}
-
-func (r *RoleImpl) GetHp() int {
-	return r.Hp
-}
-
-func (r *RoleImpl) GetMp() int {
-	return r.Mp
-}
-
-func (r *RoleImpl) SubMp(mp int) {
-	r.Mp -= mp
-}
-
 func (r *RoleImpl) SetState(state contract.State) {
 	r.State = state
 }
@@ -147,4 +133,8 @@ func (r *RoleImpl) SetObserver(event contract.Event, observer func()) {
 
 func (r *RoleImpl) MakeDamage(damage int) int {
 	return r.State.MakeDamage(damage)
+}
+
+func (r *RoleImpl) Property(key contract.PropertyKey) contract.Property {
+	return r.properties[key]
 }

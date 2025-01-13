@@ -21,7 +21,7 @@ func (s *Poisoned) CanAction() bool {
 }
 
 func (s *Poisoned) BeforeAction() {
-	s.role.SubHp(30)
+	s.role.Property(contract.Hp).Sub(30)
 }
 
 func (s *Poisoned) AfterAction() {

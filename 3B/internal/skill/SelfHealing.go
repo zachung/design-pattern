@@ -24,11 +24,11 @@ func (a *SelfHealing) GetName() string {
 }
 
 func (a *SelfHealing) CanCast(role contract.Role) bool {
-	return role.GetMp() >= a.mpCost
+	return role.Property(contract.Mp).Get() >= a.mpCost
 }
 
 func (a *SelfHealing) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
-	role.SubMp(a.mpCost)
-	role.AddHp(a.addHp)
+	role.Property(contract.Mp).Sub(a.mpCost)
+	role.Property(contract.Hp).Add(a.addHp)
 	fmt.Printf("%s 使用了 %s。\n", role.GetName(), a.GetName())
 }

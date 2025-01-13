@@ -25,7 +25,7 @@ func (a *Waterball) GetName() string {
 }
 
 func (a *Waterball) CanCast(role contract.Role) bool {
-	return role.GetMp() >= a.mpCost
+	return role.Property(contract.Mp).Get() >= a.mpCost
 }
 
 func (a *Waterball) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
@@ -34,7 +34,7 @@ func (a *Waterball) Cast(role contract.Role, ally contract.Troop, enemy contract
 	if targetCount < len(targets) {
 		targets = role.Actor().SelectTarget(targets, targetCount)
 	}
-	role.SubMp(a.mpCost)
+	role.Property(contract.Mp).Sub(a.mpCost)
 
 	var str []string
 	for _, enemy := range targets {
@@ -44,6 +44,6 @@ func (a *Waterball) Cast(role contract.Role, ally contract.Troop, enemy contract
 	for _, enemy := range targets {
 		damage := role.MakeDamage(a.damage)
 		fmt.Printf("%s 對 %s 造成 %d 點傷害。\n", role.GetName(), enemy.GetName(), damage)
-		enemy.SubHp(damage)
+		enemy.Property(contract.Hp).Sub(damage)
 	}
 }

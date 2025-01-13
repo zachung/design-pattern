@@ -24,7 +24,7 @@ func (a *Petrochemical) GetName() string {
 }
 
 func (a *Petrochemical) CanCast(role contract.Role) bool {
-	return role.GetMp() >= a.mpCost
+	return role.Property(contract.Mp).Get() >= a.mpCost
 }
 
 func (a *Petrochemical) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
@@ -33,7 +33,7 @@ func (a *Petrochemical) Cast(role contract.Role, ally contract.Troop, enemy cont
 	if targetCount < len(targets) {
 		targets = role.Actor().SelectTarget(targets, targetCount)
 	}
-	role.SubMp(a.mpCost)
+	role.Property(contract.Mp).Sub(a.mpCost)
 
 	var str []string
 	for _, enemy := range targets {
