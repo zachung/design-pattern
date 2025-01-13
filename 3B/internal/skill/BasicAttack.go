@@ -3,6 +3,7 @@ package skill
 import (
 	"3B/internal/contract"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -35,10 +36,10 @@ func (a *BasicAttack) Cast(role contract.Role, ally contract.Troop, enemy contra
 	for _, enemy := range targets {
 		str = append(str, enemy.GetName())
 	}
-	fmt.Printf("%s 攻擊 %s。\n", role.GetName(), strings.Join(str, ", "))
+	log.Println(fmt.Sprintf("%s 攻擊 %s。", role.GetName(), strings.Join(str, ", ")))
 	for _, enemy := range targets {
 		damage := role.MakeDamage(role.Property(contract.Str).Get())
-		fmt.Printf("%s 對 %s 造成 %d 點傷害。\n", role.GetName(), enemy.GetName(), damage)
+		log.Println(fmt.Sprintf("%s 對 %s 造成 %d 點傷害。", role.GetName(), enemy.GetName(), damage))
 		enemy.Property(contract.Hp).Sub(damage)
 	}
 }

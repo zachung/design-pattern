@@ -3,6 +3,7 @@ package internal
 import (
 	"3B/internal/contract"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -22,7 +23,7 @@ func (r *HeroAction) SelectTarget(enemies []contract.Role, targetCount int) []co
 	for i, t := range enemies {
 		targetList = append(targetList, fmt.Sprintf("(%d) %s", i, t.GetName()))
 	}
-	fmt.Printf("選擇 %d 位目標: %s\n", targetCount, strings.Join(targetList, " "))
+	log.Println(fmt.Sprintf("選擇 %d 位目標: %s", targetCount, strings.Join(targetList, " ")))
 	command := r.controller.PullCommand()
 	return r.role.SelectTarget(enemies, targetCount, command)
 }

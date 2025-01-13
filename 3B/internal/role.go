@@ -5,6 +5,7 @@ import (
 	"3B/internal/skill"
 	"3B/internal/state"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -38,7 +39,7 @@ func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string
 	// observer dead event
 	properties[contract.Hp].AddObserver(func(v *int) {
 		if *v <= 0 {
-			fmt.Printf("%s 死亡。\n", role.GetName())
+			log.Println(fmt.Sprintf("%s 死亡。", role.GetName()))
 		}
 		if *v > hp {
 			*v = hp
@@ -66,14 +67,15 @@ func (r *RoleImpl) Action(targetTroop contract.Troop) {
 			r.SetState(state.GetState("正常"))
 		}
 	}()
-	fmt.Printf(
-		"輪到 %s (HP: %d, MP: %d, STR: %d, State: %s)。\n",
+	turnMessage := fmt.Sprintf(
+		"輪到 %s (HP: %d, MP: %d, STR: %d, State: %s)。",
 		r.GetName(),
 		r.Property(contract.Hp).Get(),
 		r.Property(contract.Mp).Get(),
 		r.Property(contract.Str).Get(),
 		r.State.GetName(),
 	)
+	log.Println(turnMessage)
 	if !r.State.CanAction() {
 		return
 	}
@@ -97,14 +99,14 @@ func (r *RoleImpl) SelectSkill(selected int) contract.Skill {
 		actionList = append(actionList, fmt.Sprintf("(%d) %s", i, s))
 	}
 	// print 選擇行動
-	fmt.Printf("選擇行動：%v\n", strings.Join(actionList, " "))
+	log.Println(fmt.Sprintf("選擇行動：%v", strings.Join(actionList, " ")))
 
 	s := skill.GetSkill(r.Skills[selected])
 	if s == nil {
 		return nil
 	}
 	if !s.CanCast(r) {
-		fmt.Println("你缺乏 MP，不能進行此行動。")
+		log.Println("你缺乏 MP，不能進行此行動。")
 		return nil
 	}
 	return s

@@ -4,6 +4,7 @@ import (
 	"3B/internal/contract"
 	"3B/internal/state"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -50,7 +51,7 @@ func (a *Cheerup) Cast(role contract.Role, ally contract.Troop, enemy contract.T
 	if join != "" {
 		join = fmt.Sprintf("對 %s ", join)
 	}
-	fmt.Printf("%s %s使用了 %s。\n", role.GetName(), join, a.GetName())
+	log.Println(fmt.Sprintf("%s %s使用了 %s。", role.GetName(), join, a.GetName()))
 	for _, enemy := range targets {
 		enemy.SetState(state.NewCheerup(enemy))
 	}

@@ -3,6 +3,7 @@ package skill
 import (
 	"3B/internal/contract"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -45,10 +46,10 @@ func (a *SelfExplosion) Cast(role contract.Role, ally contract.Troop, enemy cont
 	for _, enemy := range targets {
 		str = append(str, enemy.GetName())
 	}
-	fmt.Printf("%s 對 %s 使用了 %s。\n", role.GetName(), strings.Join(str, ", "), a.GetName())
+	log.Println(fmt.Sprintf("%s 對 %s 使用了 %s。", role.GetName(), strings.Join(str, ", "), a.GetName()))
 	for _, enemy := range targets {
 		damage := role.MakeDamage(a.damage)
-		fmt.Printf("%s 對 %s 造成 %d 點傷害。\n", role.GetName(), enemy.GetName(), damage)
+		log.Println(fmt.Sprintf("%s 對 %s 造成 %d 點傷害。", role.GetName(), enemy.GetName(), damage))
 		enemy.Property(contract.Hp).Sub(damage)
 	}
 	// 使自己死亡

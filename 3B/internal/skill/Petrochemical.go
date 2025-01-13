@@ -4,6 +4,7 @@ import (
 	"3B/internal/contract"
 	"3B/internal/state"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -39,7 +40,7 @@ func (a *Petrochemical) Cast(role contract.Role, ally contract.Troop, enemy cont
 	for _, enemy := range targets {
 		str = append(str, enemy.GetName())
 	}
-	fmt.Printf("%s 對 %s 使用了 %s。\n", role.GetName(), strings.Join(str, ", "), a.GetName())
+	log.Println(fmt.Sprintf("%s 對 %s 使用了 %s。", role.GetName(), strings.Join(str, ", "), a.GetName()))
 	for _, enemy := range targets {
 		enemy.SetState(state.NewPetrochemical())
 	}

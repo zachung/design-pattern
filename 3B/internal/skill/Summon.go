@@ -3,6 +3,7 @@ package skill
 import (
 	"3B/internal/contract"
 	"fmt"
+	"log"
 )
 
 type Summon struct {
@@ -28,7 +29,7 @@ func (a *Summon) CanCast(role contract.Role) bool {
 
 func (a *Summon) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
 	role.Property(contract.Mp).Sub(a.mpCost)
-	fmt.Printf("%s 使用了 %s。\n", role.GetName(), a.GetName())
+	log.Println(fmt.Sprintf("%s 使用了 %s。", role.GetName(), a.GetName()))
 	slime := ally.NewRole("Slime 100 0 50")
 	slime.SetObserver(contract.OnDead, func() {
 		role.Property(contract.Hp).Add(30)

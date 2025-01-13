@@ -3,6 +3,7 @@ package skill
 import (
 	"3B/internal/contract"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -45,7 +46,7 @@ func (a *Curse) Cast(role contract.Role, ally contract.Troop, enemy contract.Tro
 	for _, enemy := range targets {
 		str = append(str, enemy.GetName())
 	}
-	fmt.Printf("%s 對 %s 使用了 %s。\n", role.GetName(), strings.Join(str, ", "), a.GetName())
+	log.Println(fmt.Sprintf("%s 對 %s 使用了 %s。", role.GetName(), strings.Join(str, ", "), a.GetName()))
 	for _, enemy := range targets {
 		curses[enemy] = append(curses[enemy], role)
 		enemy.Property(contract.Hp).AddObserver(func(hp *int) {

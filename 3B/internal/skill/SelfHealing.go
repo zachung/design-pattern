@@ -3,6 +3,7 @@ package skill
 import (
 	"3B/internal/contract"
 	"fmt"
+	"log"
 )
 
 type SelfHealing struct {
@@ -30,5 +31,5 @@ func (a *SelfHealing) CanCast(role contract.Role) bool {
 func (a *SelfHealing) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
 	role.Property(contract.Mp).Sub(a.mpCost)
 	role.Property(contract.Hp).Add(a.addHp)
-	fmt.Printf("%s 使用了 %s。\n", role.GetName(), a.GetName())
+	log.Println(fmt.Sprintf("%s 使用了 %s。", role.GetName(), a.GetName()))
 }

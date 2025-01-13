@@ -9,9 +9,10 @@ import (
 
 type Game struct {
 	battle Battle
+	hero   contract.Role
 }
 
-func Run(initConfig []string) {
+func NewGame(initConfig []string) *Game {
 	var hero contract.Role
 	var troop contract.Troop
 	var battle = Battle{troops: make([]contract.Troop, 0)}
@@ -57,6 +58,12 @@ func Run(initConfig []string) {
 			controller.AddCommand(ints)
 		}
 	}()
-	// 開始戰鬥
-	battle.Start(hero)
+	return &Game{
+		battle: battle,
+		hero:   hero,
+	}
+}
+
+func (g *Game) Start() {
+	g.battle.Start(g.hero)
 }

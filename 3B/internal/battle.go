@@ -2,7 +2,7 @@ package internal
 
 import (
 	"3B/internal/contract"
-	"fmt"
+	"log"
 )
 
 type Battle struct {
@@ -11,7 +11,6 @@ type Battle struct {
 }
 
 func (b *Battle) Start(hero contract.Role) {
-	fmt.Println("Starting Battle")
 	b.hero = hero
 	for {
 		if b.round(0, 1) {
@@ -52,11 +51,11 @@ func (b *Battle) troopAction(team1 contract.Troop, cur int) (role contract.Role)
 
 func (b *Battle) IsEnd() bool {
 	if b.hero.IsDead() {
-		fmt.Println("你失敗了！")
+		log.Println("你失敗了！")
 		return true
 	}
 	if b.troops[1].IsAnnihilated() {
-		fmt.Println("你獲勝了！")
+		log.Println("你獲勝了！")
 		return true
 	}
 	return false
