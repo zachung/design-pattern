@@ -24,6 +24,7 @@ type Role interface {
 	SubMp(mp int)
 	SetState(state State)
 	SetObserver(event Event, observer func())
+	MakeDamage(damage int) int
 }
 
 type Skill interface {
@@ -44,6 +45,7 @@ type State interface {
 	BeforeAction()
 	AfterAction()
 	IsFinished() bool
+	MakeDamage(damage int) int
 }
 
 type Event int

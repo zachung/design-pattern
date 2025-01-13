@@ -47,7 +47,7 @@ func (a *SelfExplosion) Cast(role contract.Role, ally contract.Troop, enemy cont
 	}
 	fmt.Printf("%s 對 %s 使用了 %s。\n", role.GetName(), strings.Join(str, ", "), a.GetName())
 	for _, enemy := range targets {
-		damage := a.damage
+		damage := role.MakeDamage(a.damage)
 		fmt.Printf("%s 對 %s 造成 %d 點傷害。\n", role.GetName(), enemy.GetName(), damage)
 		enemy.SubHp(damage)
 	}

@@ -27,3 +27,7 @@ func (s *Petrochemical) AfterAction() {
 func (s *Petrochemical) IsFinished() bool {
 	return s.round <= 0
 }
+
+func (s *Petrochemical) MakeDamage(damage int) int {
+	return damage
+}

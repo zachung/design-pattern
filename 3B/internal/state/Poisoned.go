@@ -31,3 +31,7 @@ func (s *Poisoned) AfterAction() {
 func (s *Poisoned) IsFinished() bool {
 	return s.round <= 0
 }
+
+func (s *Poisoned) MakeDamage(damage int) int {
+	return damage
+}

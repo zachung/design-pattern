@@ -144,3 +144,7 @@ func (r *RoleImpl) SelectTarget(enemies []contract.Role, targetCount int, select
 func (r *RoleImpl) SetObserver(event contract.Event, observer func()) {
 	r.observers[event] = observer
 }
+
+func (r *RoleImpl) MakeDamage(damage int) int {
+	return r.State.MakeDamage(damage)
+}

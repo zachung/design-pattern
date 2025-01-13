@@ -25,3 +25,7 @@ func (s *NormalState) AfterAction() {
 func (s *NormalState) IsFinished() bool {
 	return false
 }
+
+func (s *NormalState) MakeDamage(damage int) int {
+	return damage
+}

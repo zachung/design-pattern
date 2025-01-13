@@ -37,7 +37,7 @@ func (a *BasicAttack) Cast(role contract.Role, ally contract.Troop, enemy contra
 	}
 	fmt.Printf("%s 攻擊 %s。\n", role.GetName(), strings.Join(str, ", "))
 	for _, enemy := range targets {
-		damage := role.GetStr()
+		damage := role.MakeDamage(role.GetStr())
 		fmt.Printf("%s 對 %s 造成 %d 點傷害。\n", role.GetName(), enemy.GetName(), damage)
 		enemy.SubHp(damage)
 	}
