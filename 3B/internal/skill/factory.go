@@ -24,6 +24,8 @@ func GetSkill(name string) contract.Skill {
 		return NewCheerup()
 	case "詛咒":
 		return NewCurse()
+	case "一拳攻擊":
+		return NewOnePunch()
 	}
 	panic("skill " + name + " not found")
 }
