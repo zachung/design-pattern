@@ -19,6 +19,7 @@ type Role interface {
 	SubHp(damage int)
 	AddHp(hp int)
 	GetStr() int
+	GetHp() int
 	GetMp() int
 	SubMp(mp int)
 	SetState(state State)

@@ -112,6 +112,10 @@ func (r *RoleImpl) GetStr() int {
 	return r.Str
 }
 
+func (r *RoleImpl) GetHp() int {
+	return r.Hp
+}
+
 func (r *RoleImpl) GetMp() int {
 	return r.Mp
 }
