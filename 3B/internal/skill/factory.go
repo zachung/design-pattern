@@ -20,6 +20,8 @@ func GetSkill(name string) contract.Skill {
 		return NewSummon()
 	case "自爆":
 		return NewSelfExplosion()
+	case "鼓舞":
+		return NewCheerup()
 	}
 	panic("skill " + name + " not found")
 }
