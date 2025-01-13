@@ -138,3 +138,7 @@ func (r *RoleImpl) MakeDamage(damage int) int {
 func (r *RoleImpl) Property(key contract.PropertyKey) contract.Property {
 	return r.properties[key]
 }
+
+func (r *RoleImpl) GetState() contract.State {
+	return r.State
+}

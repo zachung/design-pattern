@@ -20,6 +20,7 @@ type Role interface {
 	SetObserver(event Event, observer func())
 	MakeDamage(damage int) int
 	Property(key PropertyKey) Property
+	GetState() State
 }
 
 type Skill interface {

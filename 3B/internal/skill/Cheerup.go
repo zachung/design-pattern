@@ -46,7 +46,11 @@ func (a *Cheerup) Cast(role contract.Role, ally contract.Troop, enemy contract.T
 	for _, enemy := range targets {
 		str = append(str, enemy.GetName())
 	}
-	fmt.Printf("%s 對 %s 使用了 %s。\n", role.GetName(), strings.Join(str, ", "), a.GetName())
+	join := strings.Join(str, ", ")
+	if join != "" {
+		join = fmt.Sprintf("對 %s ", join)
+	}
+	fmt.Printf("%s %s使用了 %s。\n", role.GetName(), join, a.GetName())
 	for _, enemy := range targets {
 		enemy.SetState(state.NewCheerup(enemy))
 	}

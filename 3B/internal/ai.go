@@ -17,6 +17,11 @@ func (a *AI) SelectSkill(skillCount int) contract.Skill {
 
 func (a *AI) SelectTarget(enemies []contract.Role, targetCount int) []contract.Role {
 	n := len(enemies)
+	defer func() {
+		if n > targetCount {
+			a.seed += 1
+		}
+	}()
 	var ints []int
 	for i := a.seed % n; i < n; i++ {
 		if i == n {
@@ -34,5 +39,4 @@ func (a *AI) SelectTarget(enemies []contract.Role, targetCount int) []contract.R
 
 func (a *AI) CastSkill(s contract.Skill, ally contract.Troop, enemy contract.Troop) {
 	s.Cast(a.role, ally, enemy)
-	a.seed += 1
 }
