@@ -31,8 +31,10 @@ func (a *Summon) Cast(role contract.Role, ally contract.Troop, enemy contract.Tr
 	role.Property(contract.Mp).Sub(a.mpCost)
 	log.Println(fmt.Sprintf("%s 使用了 %s。", role.GetName(), a.GetName()))
 	slime := ally.NewRole("Slime 100 0 50")
-	slime.SetObserver(contract.OnDead, func() {
-		role.Property(contract.Hp).Add(30)
+	slime.Property(contract.Hp).AddObserver(func(v *int) {
+		if *v <= 0 {
+			role.Property(contract.Hp).Add(30)
+		}
 	})
 	ally.AddRole(slime)
 }

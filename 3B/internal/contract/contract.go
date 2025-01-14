@@ -17,7 +17,6 @@ type Role interface {
 	SelectTarget(enemies []Role, targetCount int, selected []int) (targets []Role)
 	Actor() Actor
 	SetState(state State)
-	SetObserver(event Event, observer func())
 	MakeDamage(damage int) int
 	Property(key PropertyKey) Property
 	GetState() State

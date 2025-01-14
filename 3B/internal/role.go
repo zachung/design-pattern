@@ -18,7 +18,6 @@ type RoleImpl struct {
 	troop      contract.Troop
 	actor      contract.Actor
 	commands   []string
-	observers  map[contract.Event]func()
 }
 
 func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string) contract.Role {
@@ -33,16 +32,12 @@ func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string
 		Skills:     skills,
 		State:      state.GetState("正常"),
 		troop:      troop,
-		observers:  map[contract.Event]func(){},
 		properties: properties,
 	}
 	// observer dead event
 	properties[contract.Hp].AddObserver(func(v *int) {
 		if *v <= 0 {
 			log.Println(fmt.Sprintf("%s 死亡。", role.GetName()))
-		}
-		if *v > hp {
-			*v = hp
 		}
 	})
 	return role
@@ -127,10 +122,6 @@ func (r *RoleImpl) SelectTarget(enemies []contract.Role, targetCount int, select
 	}
 
 	return
-}
-
-func (r *RoleImpl) SetObserver(event contract.Event, observer func()) {
-	r.observers[event] = observer
 }
 
 func (r *RoleImpl) MakeDamage(damage int) int {
