@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"3B/internal/utils"
 	"log"
 	"os"
 	"path/filepath"
@@ -48,14 +47,14 @@ func prepareTestcases(dataFolder string) (map[string]string, map[string]string) 
 }
 
 func runCase(t *testing.T, input, output string) {
-	logWriter := &utils.LogWriter{}
+	logWriter := new(strings.Builder)
 	log.SetOutput(logWriter)
 	log.SetFlags(0)
 
 	game := NewGame(strings.Split(input, "\n"))
 	game.Start()
 
-	logs := logWriter.GetLogs()
+	logs := logWriter.String()
 	expected := strings.Split(output, "\n")
 	actual := strings.Split(logs, "\n")
 	for i, s := range expected {

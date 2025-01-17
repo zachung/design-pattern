@@ -2,7 +2,6 @@ package main
 
 import (
 	"3B/internal"
-	"3B/internal/utils"
 	"fmt"
 	"log"
 	"strings"
@@ -26,13 +25,13 @@ Slime1 100 100 30 自我治療
 0
 0`
 
-	logWriter := &utils.LogWriter{}
+	logWriter := new(strings.Builder)
 	log.SetOutput(logWriter)
 	log.SetFlags(0)
 
 	game := internal.NewGame(strings.Split(input, "\n"))
 	game.Start()
 
-	logs := logWriter.GetLogs()
+	logs := logWriter.String()
 	fmt.Println(logs)
 }
