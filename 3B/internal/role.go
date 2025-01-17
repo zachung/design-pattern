@@ -30,7 +30,7 @@ func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string
 		Name:       name,
 		MaxHp:      hp,
 		Skills:     skills,
-		State:      state.GetState("正常"),
+		State:      state.NewNormalState(),
 		troop:      troop,
 		properties: properties,
 	}
@@ -59,7 +59,7 @@ func (r *RoleImpl) Action(targetTroop contract.Troop) {
 	defer func() {
 		r.State.AfterAction()
 		if r.State.IsFinished() {
-			r.SetState(state.GetState("正常"))
+			r.SetState(state.NewNormalState())
 		}
 	}()
 	turnMessage := fmt.Sprintf(

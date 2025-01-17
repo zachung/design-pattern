@@ -70,7 +70,7 @@ func (a *OnePunch) applySkill(role contract.Role, enemy contract.Role) {
 		damage := role.MakeDamage(100)
 		log.Println(fmt.Sprintf("%s 對 %s 造成 %d 點傷害。", role.GetName(), enemy.GetName(), damage))
 		enemy.Property(contract.Hp).Sub(damage)
-		enemy.SetState(state.GetState("正常"))
+		enemy.SetState(state.NewNormalState())
 		return
 	}
 	if stateName == "正常" {
