@@ -1,4 +1,4 @@
-# State - 2D Map Adventure Game
+# State - 二維地圖冒險遊戲
 
 ## Run
 ```shell
