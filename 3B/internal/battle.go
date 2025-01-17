@@ -31,7 +31,7 @@ func (b *Battle) round(team1Index, team2Index int) bool {
 		}
 		if !role.IsDead() {
 			role.Action(b.troops[team2Index])
-			if b.IsEnd() {
+			if b.isEnd() {
 				return true
 			}
 		}
@@ -49,7 +49,7 @@ func (b *Battle) troopAction(team1 contract.Troop, cur int) (role contract.Role)
 	}
 }
 
-func (b *Battle) IsEnd() bool {
+func (b *Battle) isEnd() bool {
 	if b.hero.IsDead() {
 		log.Println("你失敗了！")
 		return true

@@ -12,13 +12,13 @@ type Game struct {
 	hero   contract.Role
 }
 
-func NewGame(initConfig []string) *Game {
+func NewGame(input []string) *Game {
 	var hero contract.Role
 	var troop contract.Troop
 	var battle = Battle{troops: make([]contract.Troop, 0)}
 	var cmdStrs []string
 	controller := NewController()
-	for _, s := range initConfig {
+	for _, s := range input {
 		r := regexp.MustCompile(`#軍隊-(\d)-(.*)`)
 		match := r.FindStringSubmatch(s)
 		if len(match) > 1 {

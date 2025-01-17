@@ -7,9 +7,8 @@ import (
 )
 
 type TroopImpl struct {
-	I      int
-	roles  []contract.Role
-	battle *Battle
+	I     int
+	roles []contract.Role
 }
 
 func (t *TroopImpl) GetI() int {

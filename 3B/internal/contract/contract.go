@@ -43,12 +43,6 @@ type State interface {
 	MakeDamage(damage int) int
 }
 
-type Event int
-
-const (
-	OnDead Event = iota
-)
-
 type PropertyKey int
 
 const (
