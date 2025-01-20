@@ -7,6 +7,7 @@ import (
 	"3-2/internal/utils"
 	"log"
 	"strconv"
+	"strings"
 )
 
 var availableCmds = []string{
@@ -20,7 +21,7 @@ var availableCmds = []string{
 type MainController struct {
 	tank         item.Tank
 	telecom      item.Telecom
-	keyboard     map[string]int
+	keyboard     map[string][]int
 	history      []contract.Command
 	historyIndex int
 }
@@ -29,7 +30,7 @@ func NewMainController(tank item.Tank, telecom item.Telecom) *MainController {
 	return &MainController{
 		tank:         tank,
 		telecom:      telecom,
-		keyboard:     make(map[string]int),
+		keyboard:     make(map[string][]int),
 		historyIndex: 0,
 	}
 }
@@ -40,10 +41,7 @@ func (c *MainController) Start() {
 		in := utils.ReadTypeIn()
 		switch in {
 		case "1":
-			log.Printf("Key:")
-			key := utils.ReadTypeIn()
-			c.bind(key)
-			c.DisplayBinding()
+			c.bind()
 		case "2":
 			c.undo()
 		case "3":
@@ -55,45 +53,61 @@ func (c *MainController) Start() {
 }
 
 func (c *MainController) press(key string) {
-	i, ok := c.keyboard[key]
+	cmds, ok := c.keyboard[key]
 	if !ok {
 		return
 	}
-	pairCmd := availableCmds[i]
 	var cmd contract.Command
-	switch pairCmd {
-	case "MoveTankForward":
-		cmd = command.NewMoveTankForward(c.tank)
-	case "MoveTankBackward":
-		cmd = command.NewMoveTankBackward(c.tank)
-	case "ConnectTelecom":
-		cmd = command.NewConnectTelecom(c.telecom)
-	case "DisconnectTelecom":
-		cmd = command.NewDisconnectTelecom(c.telecom)
-	case "ResetMainControlKeyboard":
-		cmd = command.NewResetMainControlKeyboard(c, c.keyboard)
-	default:
-		return
+	if len(cmds) == 1 {
+		i := cmds[0]
+		cmd = c.getCommand(i)
+	} else {
+		var commands []contract.Command
+		for _, i := range cmds {
+			commands = append(commands, c.getCommand(i))
+		}
+		cmd = command.NewMacro(commands)
 	}
 	cmd.Execute()
 	c.history = append(c.history[:c.historyIndex], cmd)
 	c.historyIndex = len(c.history)
 }
 
-func (c *MainController) bind(key string) {
-	log.Printf("要將哪一道指令設置到快捷鍵 %s 上:\n", key)
-	for i, cmd := range availableCmds {
-		log.Printf("(%d) %s ", i, cmd)
-	}
-	var cmdIndex int
+func (c *MainController) bind() {
+	var isMacro bool
 	for {
-		i, _ := strconv.Atoi(utils.ReadTypeIn())
-		if i >= 0 && i < len(availableCmds) {
-			cmdIndex = i
+		log.Printf("設置巨集指令 (y/n)：")
+		in := utils.ReadTypeIn()
+		if in == "y" {
+			isMacro = true
+			break
+		} else if in == "n" {
+			isMacro = false
 			break
 		}
 	}
-	c.keyboard[key] = cmdIndex
+	log.Printf("Key:")
+	key := utils.ReadTypeIn()
+	if isMacro {
+		log.Printf("要將哪些指令設置成快捷鍵 %s 的巨集（輸入多個數字，以空白隔開）:\n", key)
+	} else {
+		log.Printf("要將哪一道指令設置到快捷鍵 %s 上:\n", key)
+	}
+	for i, cmd := range availableCmds {
+		log.Printf("(%d) %s ", i, cmd)
+	}
+	var cmdIndexes []int
+	s := utils.ReadTypeIn()
+	cmds := strings.Split(s, " ")
+	for _, cmd := range cmds {
+		c, _ := strconv.Atoi(cmd)
+		cmdIndexes = append(cmdIndexes, c)
+	}
+	c.keyboard[key] = cmdIndexes
+	c.DisplayBinding()
+}
+
+func (c *MainController) bindMacro(key string) {
 }
 
 func (c *MainController) undo() {
@@ -113,16 +127,37 @@ func (c *MainController) redo() {
 }
 
 func (c *MainController) Reset() {
-	c.keyboard = make(map[string]int)
+	c.keyboard = make(map[string][]int)
 }
 
-func (c *MainController) SetKeyboard(keyboard map[string]int) {
+func (c *MainController) SetKeyboard(keyboard map[string][]int) {
 	c.keyboard = keyboard
 }
 
 func (c *MainController) DisplayBinding() {
 	// display key mapped
-	for s, i := range c.keyboard {
-		log.Printf("%s: %s", s, availableCmds[i])
+	for s, ints := range c.keyboard {
+		listenFuncs := availableCmds[ints[0]]
+		for i := 1; i < len(ints); i++ {
+			listenFuncs += " & " + availableCmds[ints[i]]
+		}
+		log.Printf("%s: %s", s, listenFuncs)
 	}
+}
+
+func (c *MainController) getCommand(i int) (cmd contract.Command) {
+	pairCmd := availableCmds[i]
+	switch pairCmd {
+	case "MoveTankForward":
+		cmd = command.NewMoveTankForward(c.tank)
+	case "MoveTankBackward":
+		cmd = command.NewMoveTankBackward(c.tank)
+	case "ConnectTelecom":
+		cmd = command.NewConnectTelecom(c.telecom)
+	case "DisconnectTelecom":
+		cmd = command.NewDisconnectTelecom(c.telecom)
+	case "ResetMainControlKeyboard":
+		cmd = command.NewResetMainControlKeyboard(c, c.keyboard)
+	}
+	return
 }

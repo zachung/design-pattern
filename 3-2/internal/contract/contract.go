@@ -2,7 +2,7 @@ package contract
 
 type Controller interface {
 	Reset()
-	SetKeyboard(keyboard map[string]int)
+	SetKeyboard(keyboard map[string][]int)
 	DisplayBinding()
 }
 

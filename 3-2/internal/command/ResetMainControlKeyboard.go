@@ -6,10 +6,10 @@ import (
 
 type ResetMainControlKeyboard struct {
 	controller contract.Controller
-	keyboard   map[string]int
+	keyboard   map[string][]int
 }
 
-func NewResetMainControlKeyboard(c contract.Controller, keyboard map[string]int) *ResetMainControlKeyboard {
+func NewResetMainControlKeyboard(c contract.Controller, keyboard map[string][]int) *ResetMainControlKeyboard {
 	return &ResetMainControlKeyboard{controller: c, keyboard: keyboard}
 }
 
