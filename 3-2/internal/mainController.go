@@ -4,10 +4,10 @@ import (
 	"3-2/internal/command"
 	"3-2/internal/contract"
 	"3-2/internal/item"
-	"3-2/internal/utils"
 	"log"
 	"strconv"
 	"strings"
+	"testing"
 )
 
 var availableCmds = []string{
@@ -19,6 +19,7 @@ var availableCmds = []string{
 }
 
 type MainController struct {
+	reader       <-chan string
 	tank         item.Tank
 	telecom      item.Telecom
 	keyboard     map[string][]int
@@ -35,10 +36,13 @@ func NewMainController(tank item.Tank, telecom item.Telecom) *MainController {
 	}
 }
 
-func (c *MainController) Start() {
-	for {
-		log.Println("(1) 快捷鍵設置 (2) Undo (3) Redo (字母) 按下按鍵:")
-		in := utils.ReadTypeIn()
+func (c *MainController) Start(reader <-chan string) {
+	c.reader = reader
+	log.Println("(1) 快捷鍵設置 (2) Undo (3) Redo (字母) 按下按鍵:")
+	for in := range c.reader {
+		if testing.Testing() {
+			log.Println(in)
+		}
 		switch in {
 		case "1":
 			c.bind()
@@ -49,6 +53,7 @@ func (c *MainController) Start() {
 		default:
 			c.press(in)
 		}
+		log.Println("(1) 快捷鍵設置 (2) Undo (3) Redo (字母) 按下按鍵:")
 	}
 }
 
@@ -77,7 +82,7 @@ func (c *MainController) bind() {
 	var isMacro bool
 	for {
 		log.Printf("設置巨集指令 (y/n)：")
-		in := utils.ReadTypeIn()
+		in := c.readTypeIn()
 		if in == "y" {
 			isMacro = true
 			break
@@ -87,7 +92,7 @@ func (c *MainController) bind() {
 		}
 	}
 	log.Printf("Key:")
-	key := utils.ReadTypeIn()
+	key := c.readTypeIn()
 	if isMacro {
 		log.Printf("要將哪些指令設置成快捷鍵 %s 的巨集（輸入多個數字，以空白隔開）:\n", key)
 	} else {
@@ -97,17 +102,14 @@ func (c *MainController) bind() {
 		log.Printf("(%d) %s ", i, cmd)
 	}
 	var cmdIndexes []int
-	s := utils.ReadTypeIn()
+	s := c.readTypeIn()
 	cmds := strings.Split(s, " ")
 	for _, cmd := range cmds {
-		c, _ := strconv.Atoi(cmd)
-		cmdIndexes = append(cmdIndexes, c)
+		i, _ := strconv.Atoi(cmd)
+		cmdIndexes = append(cmdIndexes, i)
 	}
 	c.keyboard[key] = cmdIndexes
 	c.DisplayBinding()
-}
-
-func (c *MainController) bindMacro(key string) {
 }
 
 func (c *MainController) undo() {
@@ -135,13 +137,17 @@ func (c *MainController) SetKeyboard(keyboard map[string][]int) {
 }
 
 func (c *MainController) DisplayBinding() {
-	// display key mapped
-	for s, ints := range c.keyboard {
-		listenFuncs := availableCmds[ints[0]]
-		for i := 1; i < len(ints); i++ {
-			listenFuncs += " & " + availableCmds[ints[i]]
+	// a-z
+	for i := range 26 {
+		s := string(rune(i + 97))
+		if c.keyboard[s] != nil {
+			ints := c.keyboard[s]
+			listenFuncs := availableCmds[ints[0]]
+			for i := 1; i < len(ints); i++ {
+				listenFuncs += " & " + availableCmds[ints[i]]
+			}
+			log.Printf("%s: %s", s, listenFuncs)
 		}
-		log.Printf("%s: %s", s, listenFuncs)
 	}
 }
 
@@ -160,4 +166,12 @@ func (c *MainController) getCommand(i int) (cmd contract.Command) {
 		cmd = command.NewResetMainControlKeyboard(c, c.keyboard)
 	}
 	return
+}
+
+func (c *MainController) readTypeIn() string {
+	s := <-c.reader
+	if testing.Testing() {
+		log.Println(s)
+	}
+	return s
 }
