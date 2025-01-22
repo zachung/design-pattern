@@ -1,7 +1,7 @@
 package main
 
 import (
-	"3B/internal"
+	"3B/cmd/client"
 	"fmt"
 	"log"
 	"strings"
@@ -29,7 +29,7 @@ Slime1 100 100 30 自我治療
 	log.SetOutput(logWriter)
 	log.SetFlags(0)
 
-	game := internal.NewGame(strings.Split(input, "\n"))
+	game := client.NewGame(strings.Split(input, "\n"))
 	game.Start()
 
 	logs := logWriter.String()

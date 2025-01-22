@@ -1,6 +1,8 @@
-package internal
+package client
 
 import (
+	"3B/internal"
+	"3B/internal/actor"
 	"3B/internal/contract"
 	"regexp"
 	"strconv"
@@ -8,16 +10,17 @@ import (
 )
 
 type Game struct {
-	battle Battle
+	battle *internal.Battle
 	hero   contract.Role
 }
 
 func NewGame(input []string) *Game {
 	var hero contract.Role
 	var troop contract.Troop
-	var battle = Battle{troops: make([]contract.Troop, 0)}
+	var battle = internal.NewBattle()
 	var cmdStrs []string
-	controller := NewController()
+	controller := actor.NewController()
+	var countTroops int
 	for _, s := range input {
 		r := regexp.MustCompile(`#軍隊-(\d)-(.*)`)
 		match := r.FindStringSubmatch(s)
@@ -25,14 +28,15 @@ func NewGame(input []string) *Game {
 			i, _ := strconv.Atoi(match[1])
 			// 切換軍隊
 			if match[2] == "開始" {
-				troop = &TroopImpl{I: i}
+				troop = &internal.TroopImpl{I: i}
 			}
 			if match[2] == "結束" {
-				battle.troops = append(battle.troops, troop)
+				battle.AddTroop(troop)
+				countTroops++
 			}
 			continue
 		}
-		if len(battle.troops) < 2 {
+		if countTroops < 2 {
 			if troop == nil {
 				panic("軍隊還沒建立")
 			}
@@ -40,7 +44,9 @@ func NewGame(input []string) *Game {
 			role := troop.NewRole(s)
 			if strings.Contains(role.GetName(), "英雄") {
 				hero = role
-				role.SetActor(&HeroAction{role: role, controller: controller})
+				role.SetActor(actor.NewHeroAction(role, controller))
+			} else {
+				role.SetActor(actor.NewAI(role))
 			}
 			troop.AddRole(role)
 			continue

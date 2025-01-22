@@ -23,7 +23,6 @@ func (t *TroopImpl) NewRole(data string) contract.Role {
 	str, _ := strconv.Atoi(properties[3])
 	skills := append([]string{"普通攻擊"}, properties[4:]...)
 	role := NewRole(t, name, hp, mp, str, skills)
-	role.SetActor(&AI{role: role})
 
 	return role
 }

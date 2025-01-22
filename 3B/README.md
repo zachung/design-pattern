@@ -7,7 +7,7 @@ go run ./cmd/main.go
 
 ## Test
 ```shell
-go test ./internal/ -cover
+go test ./cmd/client/ -cover
 ```
 
 ## OOD

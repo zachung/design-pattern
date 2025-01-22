@@ -1,4 +1,4 @@
-package internal
+package actor
 
 import (
 	"3B/internal/contract"
@@ -7,6 +7,10 @@ import (
 type AI struct {
 	role contract.Role
 	seed int
+}
+
+func NewAI(role contract.Role) contract.Actor {
+	return &AI{role, 0}
 }
 
 func (a *AI) SelectSkill(skillCount int) contract.Skill {

@@ -1,4 +1,4 @@
-package internal
+package actor
 
 import (
 	"3B/internal/contract"
@@ -10,6 +10,10 @@ import (
 type HeroAction struct {
 	role       contract.Role
 	controller *Controller
+}
+
+func NewHeroAction(role contract.Role, controller *Controller) contract.Actor {
+	return &HeroAction{role, controller}
 }
 
 func (r *HeroAction) SelectSkill(skillCount int) contract.Skill {

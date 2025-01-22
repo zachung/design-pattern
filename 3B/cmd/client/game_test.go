@@ -1,4 +1,4 @@
-package internal
+package client
 
 import (
 	"log"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestGame(t *testing.T) {
-	dataFolder := "../test/data"
+	dataFolder := "../../test/data"
 	input, output := prepareTestcases(dataFolder)
 
 	for c, in := range input {

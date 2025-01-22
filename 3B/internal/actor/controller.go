@@ -1,4 +1,4 @@
-package internal
+package actor
 
 type Controller struct {
 	commands   [][]int

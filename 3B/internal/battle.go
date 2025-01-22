@@ -10,6 +10,16 @@ type Battle struct {
 	hero   contract.Role
 }
 
+func NewBattle() *Battle {
+	return &Battle{
+		troops: make([]contract.Troop, 0),
+	}
+}
+
+func (b *Battle) AddTroop(troop contract.Troop) {
+	b.troops = append(b.troops, troop)
+}
+
 func (b *Battle) Start(hero contract.Role) {
 	b.hero = hero
 	for {

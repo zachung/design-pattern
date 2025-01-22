@@ -1,6 +1,7 @@
 package skill
 
 import (
+	"3B/internal/actor"
 	"3B/internal/contract"
 	"fmt"
 	"log"
@@ -37,4 +38,5 @@ func (a *Summon) Cast(role contract.Role, ally contract.Troop, enemy contract.Tr
 		}
 	})
 	ally.AddRole(slime)
+	slime.SetActor(actor.NewAI(slime))
 }
