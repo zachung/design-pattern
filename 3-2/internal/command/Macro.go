@@ -19,7 +19,7 @@ func (cmd Macro) Execute() {
 }
 
 func (cmd Macro) Undo() {
-	for _, command := range cmd.commands {
-		command.Undo()
+	for i := len(cmd.commands) - 1; i >= 0; i-- {
+		cmd.commands[i].Undo()
 	}
 }
