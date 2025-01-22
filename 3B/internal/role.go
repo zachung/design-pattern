@@ -13,7 +13,7 @@ type RoleImpl struct {
 	Name       string
 	properties map[contract.PropertyKey]contract.Property
 	MaxHp      int
-	Skills     []string
+	Skills     []contract.Skill
 	State      contract.State
 	troop      contract.Troop
 	actor      contract.Actor
@@ -29,7 +29,7 @@ func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string
 	role := &RoleImpl{
 		Name:       name,
 		MaxHp:      hp,
-		Skills:     skills,
+		Skills:     initSkills(skills),
 		State:      state.NewNormalState(),
 		troop:      troop,
 		properties: properties,
@@ -41,6 +41,13 @@ func NewRole(troop contract.Troop, name string, hp, mp, str int, skills []string
 		}
 	})
 	return role
+}
+
+func initSkills(skillNames []string) (skills []contract.Skill) {
+	for _, skillName := range skillNames {
+		skills = append(skills, skill.GetSkill(skillName))
+	}
+	return
 }
 
 func (r *RoleImpl) SetActor(actor contract.Actor) {
@@ -91,12 +98,12 @@ func (r *RoleImpl) Action(targetTroop contract.Troop) {
 func (r *RoleImpl) SelectSkill(selected int) contract.Skill {
 	var actionList []string
 	for i, s := range r.Skills {
-		actionList = append(actionList, fmt.Sprintf("(%d) %s", i, s))
+		actionList = append(actionList, fmt.Sprintf("(%d) %s", i, s.GetName()))
 	}
 	// print 選擇行動
 	log.Println(fmt.Sprintf("選擇行動：%v", strings.Join(actionList, " ")))
 
-	s := skill.GetSkill(r.Skills[selected])
+	s := r.Skills[selected]
 	if s == nil {
 		return nil
 	}
