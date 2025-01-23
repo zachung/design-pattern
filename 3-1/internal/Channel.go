@@ -3,36 +3,35 @@ package internal
 import (
 	"3-1/internal/contract"
 	"log"
+	"sync"
 )
 
 type Channel struct {
-	Name        string
-	subscribers []contract.ChannelSubscriber
+	Name      string
+	observers sync.Map
 }
 
-func NewChannel(name string) *Channel {
-	return &Channel{name, make([]contract.ChannelSubscriber, 0)}
+func NewSubject(name string) contract.Subject {
+	return &Channel{Name: name, observers: sync.Map{}}
 }
 
-func (c *Channel) Subscribe(subscriber contract.ChannelSubscriber) {
-	log.Printf("%s 訂閱了 %s。\n", subscriber.GetName(), c.Name)
-	c.subscribers = append(c.subscribers, subscriber)
+func (c *Channel) RegisterObserver(observer contract.Observer) {
+	log.Printf("%s 訂閱了 %s。\n", observer.(*ChannelSubscriber).Name, c.Name)
+	c.observers.Store(observer, struct{}{})
 }
 
-func (c *Channel) UnSubscribe(subscriber contract.ChannelSubscriber) {
-	log.Printf("%s 解除訂閱了 %s。", subscriber.GetName(), c.Name)
-	for i, s := range c.subscribers {
-		if s.GetName() == subscriber.GetName() {
-			c.subscribers = append(c.subscribers[:i], c.subscribers[i+1:]...)
-			break
-		}
-	}
+func (c *Channel) RemoveObserver(observer contract.Observer) {
+	log.Printf("%s 解除訂閱了 %s。", observer.(*ChannelSubscriber).Name, c.Name)
+	c.observers.Delete(observer)
 }
 
-func (c *Channel) Upload(video contract.Video) {
+func (c *Channel) NotifyObservers(event string, data *interface{}) {
+	video := (*data).(*contract.Video)
 	log.Printf("頻道 %s 上架了一則新影片 \"%s\"。", c.Name, video.Title)
-	video.Channel = c
-	for _, subscriber := range c.subscribers {
-		subscriber.Notify(video)
-	}
+	(video).Channel = c
+	c.observers.Range(func(key, value interface{}) bool {
+		observer := key.(contract.Observer)
+		observer.Update(event, data)
+		return true
+	})
 }

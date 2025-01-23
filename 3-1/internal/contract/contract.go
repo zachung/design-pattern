@@ -1,19 +1,21 @@
 package contract
 
-type Channel interface {
-	Subscribe(subscriber ChannelSubscriber)
-	UnSubscribe(subscriber ChannelSubscriber)
-	Upload(video Video)
-}
-
-type ChannelSubscriber interface {
-	Notify(video Video)
-	GetName() string
-}
-
 type Video struct {
 	Title       string
 	Description string
 	Length      int
-	Channel     Channel
+	Channel     Subject
+}
+
+// Observer 是觀察者接口
+type Observer interface {
+	Update(event string, data *interface{})
+	Observe(event string, f func(data *interface{}))
+}
+
+// Subject 是主題接口
+type Subject interface {
+	RegisterObserver(observer Observer)
+	RemoveObserver(observer Observer)
+	NotifyObservers(event string, data *interface{})
 }
