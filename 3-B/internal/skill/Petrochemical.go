@@ -1,35 +1,34 @@
 package skill
 
 import (
-	"3B/internal/contract"
+	"3-B/internal/contract"
+	"3-B/internal/state"
 	"fmt"
 	"log"
 	"strings"
 )
 
-type Waterball struct {
+type Petrochemical struct {
 	name   string
 	mpCost int
-	damage int
 }
 
-func NewWaterball() contract.Skill {
-	return &Waterball{
-		name:   "水球",
-		mpCost: 50,
-		damage: 120,
+func NewPetrochemical() contract.Skill {
+	return &Petrochemical{
+		name:   "石化",
+		mpCost: 100,
 	}
 }
 
-func (a *Waterball) GetName() string {
+func (a *Petrochemical) GetName() string {
 	return a.name
 }
 
-func (a *Waterball) CanCast(role contract.Role) bool {
+func (a *Petrochemical) CanCast(role contract.Role) bool {
 	return role.Property(contract.Mp).Get() >= a.mpCost
 }
 
-func (a *Waterball) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
+func (a *Petrochemical) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
 	targetCount := 1
 	targets := enemy.AliveRoles()
 	if targetCount < len(targets) {
@@ -43,8 +42,6 @@ func (a *Waterball) Cast(role contract.Role, ally contract.Troop, enemy contract
 	}
 	log.Println(fmt.Sprintf("%s 對 %s 使用了 %s。", role.GetName(), strings.Join(str, ", "), a.GetName()))
 	for _, enemy := range targets {
-		damage := role.MakeDamage(a.damage)
-		log.Println(fmt.Sprintf("%s 對 %s 造成 %d 點傷害。", role.GetName(), enemy.GetName(), damage))
-		enemy.Property(contract.Hp).Sub(damage)
+		enemy.SetState(state.NewPetrochemical())
 	}
 }

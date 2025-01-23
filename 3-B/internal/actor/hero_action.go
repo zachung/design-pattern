@@ -1,7 +1,7 @@
 package actor
 
 import (
-	"3B/internal/contract"
+	"3-B/internal/contract"
 	"fmt"
 	"log"
 	"strings"

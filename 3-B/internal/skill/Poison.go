@@ -1,34 +1,34 @@
 package skill
 
 import (
-	"3B/internal/contract"
-	"3B/internal/state"
+	"3-B/internal/contract"
+	"3-B/internal/state"
 	"fmt"
 	"log"
 	"strings"
 )
 
-type Petrochemical struct {
+type Poison struct {
 	name   string
 	mpCost int
 }
 
-func NewPetrochemical() contract.Skill {
-	return &Petrochemical{
-		name:   "石化",
-		mpCost: 100,
+func NewPoison() contract.Skill {
+	return &Poison{
+		name:   "下毒",
+		mpCost: 80,
 	}
 }
 
-func (a *Petrochemical) GetName() string {
+func (a *Poison) GetName() string {
 	return a.name
 }
 
-func (a *Petrochemical) CanCast(role contract.Role) bool {
+func (a *Poison) CanCast(role contract.Role) bool {
 	return role.Property(contract.Mp).Get() >= a.mpCost
 }
 
-func (a *Petrochemical) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
+func (a *Poison) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
 	targetCount := 1
 	targets := enemy.AliveRoles()
 	if targetCount < len(targets) {
@@ -42,6 +42,6 @@ func (a *Petrochemical) Cast(role contract.Role, ally contract.Troop, enemy cont
 	}
 	log.Println(fmt.Sprintf("%s 對 %s 使用了 %s。", role.GetName(), strings.Join(str, ", "), a.GetName()))
 	for _, enemy := range targets {
-		enemy.SetState(state.NewPetrochemical())
+		enemy.SetState(state.NewPoisoned(enemy))
 	}
 }

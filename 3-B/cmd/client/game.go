@@ -1,9 +1,9 @@
 package client
 
 import (
-	"3B/internal"
-	"3B/internal/actor"
-	"3B/internal/contract"
+	"3-B/internal"
+	"3-B/internal/actor"
+	"3-B/internal/contract"
 	"regexp"
 	"strconv"
 	"strings"

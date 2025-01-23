@@ -1,7 +1,7 @@
 package main
 
 import (
-	"3B/cmd/client"
+	"3-B/cmd/client"
 	"fmt"
 	"log"
 	"strings"

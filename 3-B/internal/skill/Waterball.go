@@ -1,37 +1,40 @@
 package skill
 
 import (
-	"3B/internal/contract"
+	"3-B/internal/contract"
 	"fmt"
 	"log"
 	"strings"
 )
 
-type Fireball struct {
+type Waterball struct {
 	name   string
 	mpCost int
 	damage int
 }
 
-func NewFireball() contract.Skill {
-	return &Fireball{
-		name:   "火球",
+func NewWaterball() contract.Skill {
+	return &Waterball{
+		name:   "水球",
 		mpCost: 50,
-		damage: 50,
+		damage: 120,
 	}
 }
 
-func (a *Fireball) GetName() string {
+func (a *Waterball) GetName() string {
 	return a.name
 }
 
-func (a *Fireball) CanCast(role contract.Role) bool {
+func (a *Waterball) CanCast(role contract.Role) bool {
 	return role.Property(contract.Mp).Get() >= a.mpCost
 }
 
-func (a *Fireball) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
+func (a *Waterball) Cast(role contract.Role, ally contract.Troop, enemy contract.Troop) {
+	targetCount := 1
 	targets := enemy.AliveRoles()
-
+	if targetCount < len(targets) {
+		targets = role.Actor().SelectTarget(targets, targetCount)
+	}
 	role.Property(contract.Mp).Sub(a.mpCost)
 
 	var str []string

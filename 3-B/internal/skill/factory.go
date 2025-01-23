@@ -1,6 +1,6 @@
 package skill
 
-import "3B/internal/contract"
+import "3-B/internal/contract"
 
 func GetSkill(name string) contract.Skill {
 	switch name {

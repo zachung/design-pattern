@@ -1,8 +1,8 @@
 package skill
 
 import (
-	"3B/internal/actor"
-	"3B/internal/contract"
+	"3-B/internal/actor"
+	"3-B/internal/contract"
 	"fmt"
 	"log"
 )

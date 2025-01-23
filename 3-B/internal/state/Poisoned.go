@@ -1,6 +1,6 @@
 package state
 
-import "3B/internal/contract"
+import "3-B/internal/contract"
 
 type Poisoned struct {
 	name  string

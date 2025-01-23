@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"3B/internal/contract"
+	"3-B/internal/contract"
 	"log"
 )
 
