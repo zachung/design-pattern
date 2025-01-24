@@ -54,6 +54,8 @@ out:
 		return pattern.NewSingle(cards)
 	case 2:
 		return pattern.NewPair(cards)
+	case 5:
+		return pattern.NewStraight(cards)
 	}
 	p.Cards = preCards
 

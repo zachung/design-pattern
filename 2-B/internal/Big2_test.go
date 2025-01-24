@@ -15,7 +15,7 @@ func TestGame(t *testing.T) {
 	input, output := prepareTestcases(dataFolder)
 
 	for c, in := range input {
-		if c != "illegal-actions" {
+		if c != "straight" {
 			continue
 		}
 		t.Run(c, func(t *testing.T) {
