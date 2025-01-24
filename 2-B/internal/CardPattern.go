@@ -19,6 +19,9 @@ func (p CardPattern) String() string {
 	}
 	// TODO: 檢測牌型
 	patternName := "單張"
+	if len(p.cards) == 2 {
+		patternName = "對子"
+	}
 
 	return fmt.Sprintf("%s %s", patternName, name)
 }

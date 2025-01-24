@@ -14,7 +14,7 @@ func TestGame(t *testing.T) {
 	input, output := prepareTestcases(dataFolder)
 
 	for c, in := range input {
-		if c != "always-play-first-card" {
+		if c != "normal-no-error-play1" {
 			continue
 		}
 		t.Run(c, func(t *testing.T) {
