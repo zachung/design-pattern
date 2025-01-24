@@ -51,30 +51,38 @@ func (b *Big2) Start(ch chan string) {
 		}
 		player := b.players[b.curPlayerI]
 		log.Printf("輪到%s了\n", player.Name)
-		showCards(player.Cards)
-		var cardIndexes []int
-		command := <-ch
-		split := strings.Split(command, " ")
-		for _, s := range split {
-			i, _ := strconv.Atoi(s)
-			cardIndexes = append(cardIndexes, i)
-		}
-		if cardIndexes[0] == -1 {
-			// pass
-			log.Printf("玩家 %s PASS.", player.Name)
-			passCount++
-		} else {
-			pattern := player.Play(cardIndexes)
-			log.Printf("玩家 %s 打出了 %s", player.Name, pattern)
-			passCount = 0
-
-			if player.IsHandEmpty() {
-				log.Printf("遊戲結束，遊戲的勝利者為 %s", player.Name)
-				break
-			}
+		b.playerRound(ch, player, &passCount)
+		if player.IsHandEmpty() {
+			log.Printf("遊戲結束，遊戲的勝利者為 %s", player.Name)
+			return
 		}
 		b.curPlayerI++
 		b.curPlayerI = b.curPlayerI % len(b.players)
+	}
+}
+
+func (b *Big2) playerRound(ch <-chan string, player *Player, passCount *int) {
+	showCards(player.Cards)
+	var cardIndexes []int
+	command := <-ch
+	split := strings.Split(command, " ")
+	for _, s := range split {
+		i, _ := strconv.Atoi(s)
+		cardIndexes = append(cardIndexes, i)
+	}
+	if cardIndexes[0] == -1 {
+		// pass
+		if *passCount == 0 {
+			log.Printf("你不能在新的回合中喊 PASS")
+			b.playerRound(ch, player, passCount)
+			return
+		}
+		log.Printf("玩家 %s PASS.", player.Name)
+		*passCount++
+	} else {
+		pattern := player.Play(cardIndexes)
+		log.Printf("玩家 %s 打出了 %s", player.Name, pattern)
+		*passCount = 0
 	}
 }
 
