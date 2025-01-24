@@ -2,6 +2,7 @@ package internal
 
 import (
 	"2-B/internal/contract"
+	"2-B/internal/pattern"
 	"fmt"
 	"log"
 	"strconv"
@@ -89,18 +90,20 @@ func (b *Big2) playerRound(ch <-chan string, player *Player) contract.CardPatter
 		// pass
 		return nil
 	} else {
-		pattern := player.Play(cardIndexes)
-		if !b.isPatternValid(pattern) {
-			// 放回手牌
-			if pattern != nil {
-				for _, card := range pattern.GetCards() {
-					player.AddCard(card)
+		cards := player.Play(cardIndexes)
+		cardPattern := b.convertToPattern(cards)
+
+		if b.isPatternValid(cardPattern) {
+			// 移除手牌
+			if cardPattern != nil {
+				for _, card := range cardPattern.GetCards() {
+					player.RemoveCard(card)
 				}
 			}
-			log.Println("此牌型不合法，請再嘗試一次。")
-			return b.playerRound(ch, player)
+			return cardPattern
 		}
-		return pattern
+		log.Println("此牌型不合法，請再嘗試一次。")
+		return b.playerRound(ch, player)
 	}
 }
 
@@ -112,6 +115,18 @@ func (b *Big2) isPatternValid(pattern contract.CardPattern) bool {
 		return true
 	}
 	return pattern.IsGreaterThan(b.topPattern)
+}
+
+func (b *Big2) convertToPattern(cards []contract.Card) contract.CardPattern {
+	switch len(cards) {
+	case 1:
+		return pattern.NewSingle(cards)
+	case 2:
+		return pattern.NewPair(cards)
+	case 5:
+		return pattern.NewStraight(cards)
+	}
+	return nil
 }
 
 func showCards(cards []contract.Card) {
