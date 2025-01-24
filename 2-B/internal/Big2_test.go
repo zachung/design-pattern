@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"2-B/internal/contract"
 	"log"
 	"os"
 	"path/filepath"
@@ -14,7 +15,7 @@ func TestGame(t *testing.T) {
 	input, output := prepareTestcases(dataFolder)
 
 	for c, in := range input {
-		if c != "normal-no-error-play1" {
+		if c != "illegal-actions" {
 			continue
 		}
 		t.Run(c, func(t *testing.T) {
@@ -58,11 +59,11 @@ func runCase(t *testing.T, input, output string) {
 	inputLines := strings.Split(input, "\n")
 	// 準備牌堆
 	deckCardStrings := strings.Split(inputLines[0], " ")
-	var cards []Card
+	var cards []contract.Card
 	for _, cardString := range deckCardStrings {
 		r := regexp.MustCompile(`(.*)\[(.*)]`)
 		match := r.FindStringSubmatch(cardString)
-		cards = append(cards, Card{Suit(match[1]), match[2]})
+		cards = append(cards, contract.Card{contract.Suit(match[1]), match[2]})
 	}
 	players := new([4]*Player)
 	for i, s := range inputLines[1:5] {

@@ -1,23 +1,27 @@
 package internal
 
-import "slices"
+import (
+	"2-B/internal/contract"
+	"2-B/internal/pattern"
+	"slices"
+)
 
 type Player struct {
 	Name  string
-	Cards []Card
+	Cards []contract.Card
 }
 
 func NewPlayer(name string) *Player {
 	return &Player{
 		Name:  name,
-		Cards: make([]Card, 0),
+		Cards: make([]contract.Card, 0),
 	}
 }
 
-func (p *Player) AddCard(card Card) {
+func (p *Player) AddCard(card contract.Card) {
 	var i int
 	for i = 0; i < len(p.Cards); i++ {
-		if !p.Cards[i].GreaterThan(card) {
+		if p.Cards[i].GreaterThan(card) {
 			break
 		}
 	}
@@ -28,15 +32,13 @@ func (p *Player) IsHandEmpty() bool {
 	return len(p.Cards) == 0
 }
 
-func (p *Player) Play(cardIndexes []int) *CardPattern {
-	if cardIndexes[0] == -1 {
-		return nil
-	}
+func (p *Player) Play(cardIndexes []int) contract.CardPattern {
 	// 挑出手牌
-	var cards []Card
-	var less []Card
+	var cards []contract.Card
+	var less []contract.Card
+	preCards := p.Cards
 out:
-	for i, card := range p.Cards {
+	for i, card := range preCards {
 		for _, cardIndex := range cardIndexes {
 			if cardIndex == i {
 				cards = append(cards, p.Cards[i])
@@ -47,5 +49,13 @@ out:
 	}
 	p.Cards = less
 
-	return NewCardPattern(cards)
+	switch len(cards) {
+	case 1:
+		return pattern.NewSingle(cards)
+	case 2:
+		return pattern.NewPair(cards)
+	}
+	p.Cards = preCards
+
+	return nil
 }

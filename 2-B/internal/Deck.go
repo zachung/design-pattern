@@ -1,14 +1,16 @@
 package internal
 
+import "2-B/internal/contract"
+
 type Deck struct {
-	cards []Card
+	cards []contract.Card
 }
 
-func NewDeck(cards []Card) *Deck {
+func NewDeck(cards []contract.Card) *Deck {
 	return &Deck{cards}
 }
 
-func (d *Deck) Deal() (card Card) {
+func (d *Deck) Deal() (card contract.Card) {
 	l := len(d.cards) - 1
 	card, d.cards = d.cards[l], d.cards[:l]
 	return

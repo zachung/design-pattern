@@ -2,10 +2,11 @@ package main
 
 import (
 	"2-B/internal"
+	"2-B/internal/contract"
 	"log"
 )
 
-var cards = []internal.Card{
+var cards = []contract.Card{
 	{"S", "A"},
 	{"H", "A"},
 	{"D", "A"},

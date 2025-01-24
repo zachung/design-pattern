@@ -1,4 +1,4 @@
-package internal
+package contract
 
 import "fmt"
 
@@ -38,7 +38,7 @@ func (c Card) String() string {
 
 func (c Card) GreaterThan(another Card) bool {
 	if another.Rank != c.Rank {
-		return ranks[another.Rank] > ranks[c.Rank]
+		return ranks[c.Rank] > ranks[another.Rank]
 	}
-	return suits[another.Suit] > suits[c.Suit]
+	return suits[c.Suit] > suits[another.Suit]
 }

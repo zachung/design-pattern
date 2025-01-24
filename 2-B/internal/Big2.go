@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"2-B/internal/contract"
 	"fmt"
 	"log"
 	"strconv"
@@ -11,6 +12,8 @@ type Big2 struct {
 	deck       *Deck
 	players    [4]*Player
 	curPlayerI int
+	topPattern contract.CardPattern
+	topPlayer  *Player
 }
 
 func NewBig2() *Big2 {
@@ -42,16 +45,24 @@ func (b *Big2) Start(ch chan string) {
 		b.curPlayerI = b.curPlayerI % len(b.players)
 	}
 	b.curPlayerI = firstPlayerI
+	b.topPlayer = b.players[firstPlayerI]
 	// 開始打牌
-	passCount := 3
 	for {
-		if passCount == 3 {
-			log.Println("新的回合開始了。")
-			passCount = 0
-		}
 		player := b.players[b.curPlayerI]
+		if player == b.topPlayer {
+			log.Println("新的回合開始了。")
+			b.topPlayer = nil
+			b.topPattern = nil
+		}
 		log.Printf("輪到%s了\n", player.Name)
-		b.playerRound(ch, player, &passCount)
+		pattern := b.playerRound(ch, player)
+		if pattern == nil {
+			log.Printf("玩家 %s PASS.", player.Name)
+		} else {
+			log.Printf("玩家 %s 打出了 %s", player.Name, pattern)
+			b.topPlayer = player
+			b.topPattern = pattern
+		}
 		if player.IsHandEmpty() {
 			log.Printf("遊戲結束，遊戲的勝利者為 %s", player.Name)
 			return
@@ -61,7 +72,7 @@ func (b *Big2) Start(ch chan string) {
 	}
 }
 
-func (b *Big2) playerRound(ch <-chan string, player *Player, passCount *int) {
+func (b *Big2) playerRound(ch <-chan string, player *Player) contract.CardPattern {
 	showCards(player.Cards)
 	var cardIndexes []int
 	command := <-ch
@@ -71,22 +82,39 @@ func (b *Big2) playerRound(ch <-chan string, player *Player, passCount *int) {
 		cardIndexes = append(cardIndexes, i)
 	}
 	if cardIndexes[0] == -1 {
-		// pass
-		if *passCount == 0 {
+		if b.topPlayer == nil {
 			log.Printf("你不能在新的回合中喊 PASS")
-			b.playerRound(ch, player, passCount)
-			return
+			return b.playerRound(ch, player)
 		}
-		log.Printf("玩家 %s PASS.", player.Name)
-		*passCount++
+		// pass
+		return nil
 	} else {
 		pattern := player.Play(cardIndexes)
-		log.Printf("玩家 %s 打出了 %s", player.Name, pattern)
-		*passCount = 0
+		if !b.isPatternValid(pattern) {
+			// 放回手牌
+			if pattern != nil {
+				for _, card := range pattern.GetCards() {
+					player.AddCard(card)
+				}
+			}
+			log.Println("此牌型不合法，請再嘗試一次。")
+			return b.playerRound(ch, player)
+		}
+		return pattern
 	}
 }
 
-func showCards(cards []Card) {
+func (b *Big2) isPatternValid(pattern contract.CardPattern) bool {
+	if pattern == nil {
+		return false
+	}
+	if b.topPattern == nil {
+		return true
+	}
+	return pattern.IsGreaterThan(b.topPattern)
+}
+
+func showCards(cards []contract.Card) {
 	var s string
 	lastIndex := len(cards) - 1
 	for i, card := range cards {
